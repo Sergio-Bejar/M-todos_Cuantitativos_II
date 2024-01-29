@@ -1,0 +1,282 @@
+---
+output: 
+  pdf_document:
+    latex_engine: pdflatex
+    template: template.tex
+geometry: margin=1in
+
+title: "Métodos Cuantitativos Aplicados"
+author: Prof. Sergio Béjar López
+date: "Primavera 2024"
+
+email: "sergio.bejar@cide.edu"
+web: "www.bejarlopez.com"
+classhours: "Lu y Mie, 12:20 - 2:20pm"
+officehours: "Mie, 11:00am - 12:00pm"
+office: "DEP, 408"
+classroom: "203"
+
+
+fontfamily: mathpazo
+fontsize: 11pt
+header-includes:
+   - \linespread{1.05}
+---
+# Descripción del Curso
+
+Este es el segundo curso de la secuencia en métodos cuantitativos para la licenciatura en Ciencia Política y Relaciones Internacionales del CIDE. En el primer curso de métodos te familiarizaste con el uso de `R` y `RStudio` para manipular datos y aprendiste conceptos básicos de estadística y probabilidad. Esos conocimientos son muy útiles porque nos permiten identificar patrones en los datos. En algunos casos dichos patrones son claros. En otros no tanto, y nos toca a nosotros encontrar formas que nos permitan distinguir patrones regulares en los datos del "ruido". El "ruido" ó error aleatorio es común en casi todas las bases de datos. Durante el semestre nos enfocaremos en aprender una serie de herramientas conceptuales y técnicas que te ayudarán a evaluar relaciones causales (el efecto de una o más variables sobre otra) de manera sistemática. Esto no solo te ayudará a explorar preguntas relevantes en nuestro campo de estudio usando métodos cuantitativos, sino también te facilitarán el entendimiento de artículos que leerás en otras clases y que usan métodos estadísticos para probar hipótesis. 
+
+# Objetivos 
+
+1. Conocer y comprender los obstáculos y retos a los que nos enfrentamos cuándo hacemos análisis con información que es incompleta e imperfecta (algo muy común en las ciencias sociales); 
+
+2. Entender qué es la inferencia causal;
+
+3. Modelar relaciones causales entre dos o más variables; 
+
+4. Interpretar los resultados de tus modelos de forma sustantiva;
+
+5. Aprender a comunicar los resultados de tus modelos estadísticos de forma persuasiva;
+
+6. Saber usar las herramientas adecuadas para analizar relaciones causales entre variables. 
+
+# Formato del Curso
+
+Nos reuniremos presencialmente dos veces a la semana, lúnes y miércoles, de 12:20 a 2:20 PM. 
+
+En caso de que tengas preguntas relacionadas con el curso, también podrás reunirte conmigo en mis horas de oficina (Miércoles de 11am a 12pm). Si deseas reservar un espacio de 15 minutos durante este periodo, te sugiero hacerlo por email con al menos 24hrs. de anticipación. 
+
+# Prerequisitos
+
+El único requisito para esta clase es haber aprobado satisfactoriamente el primer curso de métodos cuantitativos. Los conceptos y aplicaciones estadísticas que revisaremos este semestre serán un poco más avanzadas. Pero tampoco ahondaremos mucho en derivaciones matemáticas que requieran conocimientos avanzados sobre el tema. El desarrollo de las habilidades cuantitativas de un politólogo require un enfoque disciplinado y sistemático. La curva de aprendizaje suele ser pronunciada al inicio, pero no es imposible lograr un alto entimiento de estos temas.
+
+Un buen metodólogo no solo es capaz de derivar fórmulas matemáticas. También posee la habilidad de aplicarlas en los datos. Por eso nuestra clase -al igual que los otros dos cursos de esta secuencia- tendrá un alto componente aplicado y para ello utilizaremos una herramienta con la que ya tienen familiaridad: el lenguaje `R`. La gran mayoría de las sesiones contará con ejemplos que aplican los conceptos aprendidos.  Asegúrense de tener instalado dicho programa en sus ordenadores y de traerlos a todas las clases.  
+
+
+# Textos Recomendados
+
+La gran mayoría de las lecturas que haremos este semestre provienen de los siguientes libros:
+
+- [Agresti, Alan. 2018. *Statistical Methods for the Social Sciences*. Pearson.](https://www.pearson.com/en-us/subject-catalog/p/statistical-methods-for-the-social-sciences/P200000006062/9780137546060) (**A**)
+
+- [Diez, D., C.D. Barr, and M. Cetinkaya-Rundel. 2017. *OpenIntro Statistics*. OpenIntro.](https://www.openintro.org/book/os/) (**DBC**)
+
+- [Grolemund, G., and H. Wickham. 2023. *R for Data Science*. 2nd. Edition. Canada: O'Reilly](https://r4ds.hadley.nz/) (**GW**)
+
+- [Ismay, C., and A.Y. Kim. 2018. *Modern Drive. An Introduction to Statistical and Data Sciences via R*](https://moderndive.com/index.html) (**IK**)
+
+
+Asigno estos textos porque considero que son útiles y de **libre acceso**. Así que no hay excusa para no darle un buen vistazo a los capítulos o secciones asignados antes de nuestras sesiones. Además de los libros, como es tradicional en las clases de metodología política, vas a tener acceso a las presentaciones de cada clase en la página web de nuestro curso. Para cuestiones relacionadas con la escritura de o errores en el código en `R` les recomiendo consultar sitios como [Stack Overflow](https://www.stackoverflow.com/) ó [RStudio Community](https://community.rstudio.com/).
+
+
+# Evaluación
+
+Se desempeño en clase será evaluado de la siguiente forma:
+
+| **Actividad**  | **Ponderación**             | 
+|:--: | :--: |
+| Participación | 10% |           
+| Tareas (6)   | 18% c/u |   
+|Exámenes (4) | 18% c/u |
+
+## **Participación (10%)**
+
+El contenido más importante de esta clase proviene de las sesiones presenciales y los ejercicios grupales durante ellas. Debido a lo anterior y al alto grado técnico de este curso es extremadamente importante que asistas a clase. Las ausencias injustificadas disminuirán tu calificación de participación. Si por algún motivo tienes que ausentarte, te sugiero que te pongas en contacto con tus colegas para ponerte al tanto de los temas tratados y actividades en clase. 
+
+Además, deberás participar "activamente" en clase. Una participación activa significa que debes estar preparado para hablar con los demás sobre los materiales del curso y para responder preguntas de tu profesor en caso de ser necesario. 
+
+## Tareas
+
+Seis (6) de nuestras sesiones a lo largo del semestre las dividiremos en dos partes. En la primera parte nos enfocaremos en aprender conceptos teóricos y en la segunda nos concentraremos en aplicar dichos conceptos en la práctica.  Los ejercicios de las sesiones prácticas se realizarán en equipo y tendrán ser entregados por email a más tardar a las 12pm del viernes inmediato a la sesión. Los archivos enviados deben ser claramente identificados con la fecha y el apellido de los estudiantes que forman el grupo **(MMFFAA_Apellidos)**. 
+
+**Entregas tardías recibirán una penalización del 25% por cada 24hrs.**
+
+## Exámenes
+
+Realizaremos cuatro (4) exámenes durante el semestre. Las fechas están marcadas en el calendario del curso. No habrá exámenes de reposición a menos que cuentes con un justificante de causa mayor. Los archivos con las respuestas del exámen deberán ser entregados al finalizar la sesión y deberán ser etiquetados con la fecha y el apellido del estudiante (DDMMAA_Apellido). Respuestas tardías recibirán una calificación de 1. 
+
+Los exámenes serán individuales y por ello esta estrictamente prohibida la colaboración con otras personas. Descubrir plagios en la escritura de código es muy sencillo porque todos tenemos estilos diferentes a la hora de programar. En esta clase hay **cero tolerancia por el plagio** lo que significa que dichos casos serán turnados al consejo académico para la aplicación de las sanciones correspondientes. 
+
+
+# Políticas del Curso
+
+## Integridad Académica
+
+El plagiarismo o cualquier otra instancia de deshonestidad académica no serán tolerados. Cualquier falta será sancionada de acuerdo al Código de Ética del CIDE que indica lo siguiente:
+
+“Cualquier plagio cometido en un trabajo entregado en formal final por un alumno será
+considerado falta grave y será sancionado con la baja definitiva de la institución. Cualquier
+otra falta por deshonestidad académica cometida en un curso por parte de un estudiantes
+será analizada y sancionada por las juntas de profesores de los programas docentes en los
+términos del Reglamento de Docencia.” (CIDE. 2016. Código de Ética. Artículo 6.)
+
+Si tienen alguna duda sobre el tipo de colaboración que es aceptable en el curso, no dudes en ponerte en contacto conmigo. Con gusto responderé a sus preguntas.  
+
+## Reclamos
+
+El Artículo 45 del Reglamento de Docencia del CIDE detalla el protocolo de reclamos que seguiremos en clase. Cuando estén inconformes con alguna calificación deberán presentar un reclamo por escrito dentro de las 48hrs siguientes a la recepción de su nota. Dicho reclamo será respondido por un servidor en un plazo máximo de tres (3) días hábiles. Si la inconformidad continúa, deberán enviar una solicitud por escrito a la Junta de Profesores solicitando la evaluación de su caso. Les recomiendo consultar el artículo del reglamento para tener más familiaridad con el tema. 
+
+
+## Comunicación
+
+Para mantener una comunicación eficiente durante el semestre nos mantendremos en contacto a través de los correos institucionales del CIDE. Es importante que se mantengan atentos a estos mensajes ya que serán utilizados para compratir información o actualizaciones de nuestra clase. Por favor tengan en cuenta las siguientes políticas:
+
+- De lunes a viernes responderé sus correos dentro de las primeras 24hrs. 
+- Usualmente no reviso mi correo electrónico institucional fuera de horarios laborales. 
+- Si la información que solicitan se encuentra en alguna fuente distribuida previamente, no responderé directamente a sus preguntas. En estos casos los dirigiré a la fuente que corresponda. 
+
+## Laptops, Tablets y Celulares: Políticas de Uso. 
+
+Las laptops y tablets pueden ser utilizadas EXCLUSIVAMENTE para tomar notas y practicar ejercicios. CUALQUIER uso indebido de estas herramientas puede resultar en la suspensión definitiva de los privilegios de uso por el esto del semestre. El uso de celulares ó cualquier otro aparato electrónico queda ESTRICTAMENTE prohibido por lo que deberán permanecer apagados o en silencio durante la clase.
+
+
+# Calendario Tentativo
+
+## Febrero 7: Introducción
+
+- No hay lecturas asignadas
+
+# Probabilidad
+
+## Febrero 12: Repaso de Probabilidad
+
+- A, sección 4.1
+- DBC, secciones 2.1 y 2.2
+
+## Febrero 14: Distribuciones de Probabilidad
+
+- A, secciones 4.2 y 4.3
+- DBC, capítulo 3
+
+# Inferencia Estadística
+
+## Febrero 19: Poblaciones, Muestras y Estimadores
+
+- A, secciones 4.4 - 4.6
+- DBC, secciones 2.3 - 2.5 y 4.1
+- IK, capítulo 8
+
+## Febrero 21: Estimadores Puntuales e Intervalos de Confianza
+
+- A, capítulo 5
+- DBC, 4.1 y 4.2
+- IK, capítulo 9
+
+## Febrero 26: No hay clase
+
+## Febrero 28: Pruebas de Hipótesis I
+
+- [There's Only One Test](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html), Allen Downey
+- A, seccciones 6.1 - 6.5
+- IK, 10.1 - 10.5
+- DBC, capítulo 5
+
+## Marzo 4: Pruebas de Hipótesis II
+
+- [Statistics Without the Agonizing Pain](https://www.youtube.com/watch?v=5Dnw46eC-0o), John Rauser
+
+- A, secciones 7.1 - 7.4
+- DBC, capítulo 6
+
+## Marzo 6: Pruebas de Hipótesis III
+
+- A, capítulo 8
+- DBC, sección 6.4
+
+
+## Marzo 11: Exámen 1
+
+# Regresión Lineal
+
+## Marzo 13: Introducción 
+
+- A, sección 9.1
+- DBC, sección 7.1 
+
+## Marzo 18: No hay clase
+
+## Marzo 20: Mínimos Cuadrados Ordinarios
+
+- Agresti, secciones 9.2 - 9.6
+- DBC, sección 7.2
+
+## Marzo 25: No hay clase
+
+## Marzo 27: No hay clase
+
+## Abril 1: Inferencia en Regresión Lineal I
+
+- A, secciones 9.2 - 9.6
+- DBC, secciones 7.2 - 7.4 
+
+## Abril 3: Inferencia en Regresión Lineal II
+
+- A, secciones 9.2 - 9.6
+- DBC, secciones 7.2 - 7.4
+
+## Abril 8: Examen 2
+
+## Abril 10: Relaciones Multivariadas
+
+- A, capítulo 10
+
+## Abril 15: Regresión Lineal Multiple I
+
+- A, secciones 11.1 - 11.5
+- DBC, secciones 8.1 y 8.2
+
+## Abril 17: Regresión Lineal Multiple II
+
+- A, sección 11.7 
+- Gelman y Hill (2007), secciones 3.1 - 3.3 y 4.1 - 4.5 
+
+## Abril 22: Diagnóstico para Regresión Lineal Múltiple I
+
+- A, secciones 14.1 - 14.3
+- DBC, sección 8.3
+
+## Abril 24: Diagnóstico para Regresión Lineal Múltiple II 
+
+- A, secciones 14.4 - 14.6
+
+## Abril 29: Exámen 3
+
+## Mayo 1: No hay clase
+
+# Modelos de Máxima Verosimilitud
+
+## Mayo 6: Variables Dependientes Binarias: Modelos *Logit* y *Probit*
+
+- A, secciones 15.1 - 15.3
+- DBC, sección 8.3
+
+## Mayo 8: Variables Dependientes Ordinales: Modelo *Ordered Logit* 
+
+- A, sección 15.4
+- de Hoffman, capítulo 4
+
+## Mayo 13: Variables Dependientes Nominales: Modelo *Multinomial Logit*
+
+- A, sección 15.5
+- de Hoffman, capítulo 5
+
+## Mayo 15: Conteo de Eventos: Modelos *Poisson* y *Binomial Negativo*
+
+- A, sección 15.6
+- de Hoffman, capítulo 6
+
+## Mayo 20: Introducción a Machine Learning 
+
+- [A visual introduction to machine learning](http://www.r2d3.us/visual-intro-to-machine-learning-part-1/)
+- [An Introduction to Machine Learning Theory and its Applications: A Visual Tutorial with Examples](https://www.toptal.com/machine-learning/machine-learning-theory-an-introductory-primer)
+
+## Mayo 22: Text as Data
+
+- [Text as Data: an Overview](https://kenbenoit.net/pdfs/28%20Benoit%20Text%20as%20Data%20draft%202.pdf)
+
+## Mayo 27: Temas Especiales I
+
+
+## Mayo 29: Temas Especiales II
+
+## Junio 3: Exámen 4
