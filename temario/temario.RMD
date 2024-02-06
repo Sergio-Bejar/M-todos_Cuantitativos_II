@@ -76,8 +76,8 @@ Se desempeño en clase será evaluado de la siguiente forma:
 | **Actividad**  | **Ponderación**             | 
 |:--: | :--: |
 | Participación | 10% |           
-| Tareas (6)   | 18% c/u |   
-|Exámenes (4) | 18% c/u |
+| Tareas (6)   | 5% c/u |   
+|Exámenes (3) | 20% c/u |
 
 ## **Participación (10%)**
 
@@ -85,15 +85,15 @@ El contenido más importante de esta clase proviene de las sesiones presenciales
 
 Además, deberás participar "activamente" en clase. Una participación activa significa que debes estar preparado para hablar con los demás sobre los materiales del curso y para responder preguntas de tu profesor en caso de ser necesario. 
 
-## Tareas
+## Tareas (30%)
 
 Seis (6) de nuestras sesiones a lo largo del semestre las dividiremos en dos partes. En la primera parte nos enfocaremos en aprender conceptos teóricos y en la segunda nos concentraremos en aplicar dichos conceptos en la práctica.  Los ejercicios de las sesiones prácticas se realizarán en equipo y tendrán ser entregados por email a más tardar a las 12pm del viernes inmediato a la sesión. Los archivos enviados deben ser claramente identificados con la fecha y el apellido de los estudiantes que forman el grupo **(MMFFAA_Apellidos)**. 
 
 **Entregas tardías recibirán una penalización del 25% por cada 24hrs.**
 
-## Exámenes
+## Exámenes (60%)
 
-Realizaremos cuatro (4) exámenes durante el semestre. Las fechas están marcadas en el calendario del curso. No habrá exámenes de reposición a menos que cuentes con un justificante de causa mayor. Los archivos con las respuestas del exámen deberán ser entregados al finalizar la sesión y deberán ser etiquetados con la fecha y el apellido del estudiante (DDMMAA_Apellido). Respuestas tardías recibirán una calificación de 1. 
+Realizaremos tres (3) exámenes durante el semestre. Las fechas están marcadas en el calendario del curso. No habrá exámenes de reposición a menos que cuentes con un justificante de causa mayor. Los archivos con las respuestas del exámen deberán ser entregados al finalizar la sesión y deberán ser etiquetados con la fecha y el apellido del estudiante (DDMMAA_Apellido). Respuestas tardías recibirán una calificación de 1. 
 
 Los exámenes serán individuales y por ello esta estrictamente prohibida la colaboración con otras personas. Descubrir plagios en la escritura de código es muy sencillo porque todos tenemos estilos diferentes a la hora de programar. En esta clase hay **cero tolerancia por el plagio** lo que significa que dichos casos serán turnados al consejo académico para la aplicación de las sanciones correspondientes. 
 
@@ -138,83 +138,87 @@ Las laptops y tablets pueden ser utilizadas EXCLUSIVAMENTE para tomar notas y pr
 
 # Probabilidad
 
-## Febrero 12: Repaso de Probabilidad
+## Febrero 12: No hay clase
+
+## Febrero 14: Repaso de Probabilidad
 
 - A, sección 4.1
 - DBC, secciones 2.1 y 2.2
 
-## Febrero 14: Distribuciones de Probabilidad
+## Febrero 19: Distribuciones de Probabilidad
 
 - A, secciones 4.2 y 4.3
 - DBC, capítulo 3
 
 # Inferencia Estadística
 
-## Febrero 19: Poblaciones, Muestras y Estimadores
+## Febrero 21: Poblaciones, Muestras y Estimadores
 
 - A, secciones 4.4 - 4.6
 - DBC, secciones 2.3 - 2.5 y 4.1
 - IK, capítulo 8
 
-## Febrero 21: Estimadores Puntuales e Intervalos de Confianza
+## Febrero 26: No hay clase
+
+## Febrero 28: Estimadores Puntuales e Intervalos de Confianza
 
 - A, capítulo 5
 - DBC, 4.1 y 4.2
 - IK, capítulo 9
 
-## Febrero 26: No hay clase
 
-## Febrero 28: Pruebas de Hipótesis I
+## Marzo 4: Pruebas de Hipótesis I
 
 - [There's Only One Test](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html), Allen Downey
 - A, seccciones 6.1 - 6.5
 - IK, 10.1 - 10.5
 - DBC, capítulo 5
 
-## Marzo 4: Pruebas de Hipótesis II
+## Marzo 6: Pruebas de Hipótesis II
 
 - [Statistics Without the Agonizing Pain](https://www.youtube.com/watch?v=5Dnw46eC-0o), John Rauser
 
 - A, secciones 7.1 - 7.4
 - DBC, capítulo 6
 
-## Marzo 6: Pruebas de Hipótesis III
+## Marzo 11: Pruebas de Hipótesis III
 
 - A, capítulo 8
 - DBC, sección 6.4
 
 
-## Marzo 11: Exámen 1
+## Marzo 13: Exámen 1
+
+## Marzo 18: No hay clase
 
 # Regresión Lineal
 
-## Marzo 13: Introducción 
+## Marzo 20: Introducción 
 
 - A, sección 9.1
 - DBC, sección 7.1 
 
-## Marzo 18: No hay clase
 
-## Marzo 20: Mínimos Cuadrados Ordinarios
+## Marzo 25: No hay clase (Semana Santa)
+
+## Marzo 27: No hay clase (Semana Santa)
+
+## Abril 1: Mínimos Cuadrados Ordinarios
 
 - Agresti, secciones 9.2 - 9.6
 - DBC, sección 7.2
 
-## Marzo 25: No hay clase
 
-## Marzo 27: No hay clase
-
-## Abril 1: Inferencia en Regresión Lineal I
+## Abril 3: Inferencia en Regresión Lineal I
 
 - A, secciones 9.2 - 9.6
 - DBC, secciones 7.2 - 7.4 
 
-## Abril 3: Inferencia en Regresión Lineal II
+## Abril 8: Inferencia en Regresión Lineal II
 
 - A, secciones 9.2 - 9.6
 - DBC, secciones 7.2 - 7.4
 
-## Abril 8: Examen 2
 
 ## Abril 10: Relaciones Multivariadas
 
@@ -239,7 +243,7 @@ Las laptops y tablets pueden ser utilizadas EXCLUSIVAMENTE para tomar notas y pr
 
 - A, secciones 14.4 - 14.6
 
-## Abril 29: Exámen 3
+## Abril 29: Exámen 2
 
 ## Mayo 1: No hay clase
 
@@ -279,4 +283,4 @@ Las laptops y tablets pueden ser utilizadas EXCLUSIVAMENTE para tomar notas y pr
 
 ## Mayo 29: Temas Especiales II
 
-## Junio 3: Exámen 4
+## Junio 3: Exámen 3
