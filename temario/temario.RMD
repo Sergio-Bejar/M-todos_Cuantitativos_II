@@ -10,7 +10,7 @@ author: Prof. Sergio Béjar López
 date: "Primavera 2024"
 
 email: "sergio.bejar@cide.edu"
-web: "www.bejarlopez.com"
+web: "www.github.com/Sergio-Bejar/MCA_CIDE"
 classhours: "Lu y Mie, 12:20 - 2:20pm"
 officehours: "Mie, 11:00am - 12:00pm"
 office: "DEP, 408"
@@ -24,19 +24,19 @@ header-includes:
 ---
 # Descripción del Curso
 
-Este es el segundo curso de la secuencia en métodos cuantitativos para la licenciatura en Ciencia Política y Relaciones Internacionales del CIDE. En el primer curso de métodos te familiarizaste con el uso de `R` y `RStudio` para manipular datos y aprendiste conceptos básicos de estadística y probabilidad. Esos conocimientos son muy útiles porque nos permiten identificar patrones en los datos. En algunos casos dichos patrones son claros. En otros no tanto, y nos toca a nosotros encontrar formas que nos permitan distinguir patrones regulares en los datos del "ruido". El "ruido" ó error aleatorio es común en casi todas las bases de datos. Durante el semestre nos enfocaremos en aprender una serie de herramientas conceptuales y técnicas que te ayudarán a evaluar relaciones causales (el efecto de una o más variables sobre otra) de manera sistemática. Esto no solo te ayudará a explorar preguntas relevantes en nuestro campo de estudio usando métodos cuantitativos, sino también te facilitarán el entendimiento de artículos que leerás en otras clases y que usan métodos estadísticos para probar hipótesis. 
+Este es el segundo curso de la secuencia en métodos cuantitativos para la licenciatura en Ciencia Política y Relaciones Internacionales del CIDE. En el primer curso de métodos te familiarizaste con el uso de `R` y `RStudio` para manipular datos y aprendiste conceptos básicos de estadística y probabilidad. Esos conocimientos son muy útiles porque nos permiten identificar patrones en los datos. En algunos casos dichos patrones son claros. En otros no tanto, y tenemos que aprender a diferenciarlos del "ruido". El "ruido" ó error aleatorio es común en la gran mayoría de bases de datos. En esta clase estudiaremos una serie de herramientas conceptuales y técnicas que permiten evaluar relaciones causales (el efecto de una o más variables sobre otra) de manera sistemática. Esto nos ayuda a explorar preguntas relevantes en nuestro campo de estudio usando métodos cuantitativos y facilita el entendimiento de artículos publicados que usan métodos estadísticos para probar hipótesis. 
 
 # Objetivos 
 
-1. Conocer y comprender los obstáculos y retos a los que nos enfrentamos cuándo hacemos análisis con información que es incompleta e imperfecta (algo muy común en las ciencias sociales); 
+1. Conocer y entender los obstáculos a los que nos enfrentamos en cualquier análisis de datos con información que es incompleta e imperfecta (algo muy común en las ciencias sociales); 
 
 2. Entender qué es la inferencia causal;
 
 3. Modelar relaciones causales entre dos o más variables; 
 
-4. Interpretar los resultados de tus modelos de forma sustantiva;
+4. Interpretar los resultados de modelos estadísticos substantivamente;
 
-5. Aprender a comunicar los resultados de tus modelos estadísticos de forma persuasiva;
+5. Comunicar resultados de modelos estadísticos de forma persuasiva;
 
 6. Saber usar las herramientas adecuadas para analizar relaciones causales entre variables. 
 
@@ -46,9 +46,12 @@ Nos reuniremos presencialmente dos veces a la semana, lúnes y miércoles, de 12
 
 En caso de que tengas preguntas relacionadas con el curso, también podrás reunirte conmigo en mis horas de oficina (Miércoles de 11am a 12pm). Si deseas reservar un espacio de 15 minutos durante este periodo, te sugiero hacerlo por email con al menos 24hrs. de anticipación. 
 
+Las presentaciones estarán disponibles en el [Repositorio de Github](https://github.com/Sergio-Bejar/MCA_CIDE) que ha sido creado para la clase. 
+
+
 # Prerequisitos
 
-El único requisito para esta clase es haber aprobado satisfactoriamente el primer curso de métodos cuantitativos. Los conceptos y aplicaciones estadísticas que revisaremos este semestre serán un poco más avanzadas. Pero tampoco ahondaremos mucho en derivaciones matemáticas que requieran conocimientos avanzados sobre el tema. El desarrollo de las habilidades cuantitativas de un politólogo require un enfoque disciplinado y sistemático. La curva de aprendizaje suele ser pronunciada al inicio, pero no es imposible lograr un alto entimiento de estos temas.
+El único requisito para esta clase es haber aprobado satisfactoriamente el primer curso de métodos cuantitativos. Los conceptos y aplicaciones estadísticas que estudiaremos este semestre son un poco más avanzadas. Pero tampoco ahondaremos mucho en derivaciones matemáticas que requieran conocimientos avanzados sobre el tema. El desarrollo de las habilidades cuantitativas de un politólogo require un enfoque disciplinado y sistemático. La curva de aprendizaje suele ser pronunciada al inicio, pero no es imposible lograr un alto entimiento de estos temas.
 
 Un buen metodólogo no solo es capaz de derivar fórmulas matemáticas. También posee la habilidad de aplicarlas en los datos. Por eso nuestra clase -al igual que los otros dos cursos de esta secuencia- tendrá un alto componente aplicado y para ello utilizaremos una herramienta con la que ya tienen familiaridad: el lenguaje `R`. La gran mayoría de las sesiones contará con ejemplos que aplican los conceptos aprendidos.  Asegúrense de tener instalado dicho programa en sus ordenadores y de traerlos a todas las clases.  
 
@@ -81,7 +84,7 @@ Se desempeño en clase será evaluado de la siguiente forma:
 
 ## **Participación (10%)**
 
-El contenido más importante de esta clase proviene de las sesiones presenciales y los ejercicios grupales durante ellas. Debido a lo anterior y al alto grado técnico de este curso es extremadamente importante que asistas a clase. Las ausencias injustificadas disminuirán tu calificación de participación. Si por algún motivo tienes que ausentarte, te sugiero que te pongas en contacto con tus colegas para ponerte al tanto de los temas tratados y actividades en clase. 
+El contenido más importante de esta clase proviene de las sesiones presenciales y los ejercicios grupales durante ellas. Debido a lo anterior y al alto grado técnico de este curso es extremadamente importante asistir a clase. Las ausencias injustificadas disminuirán tu calificación de participación. Si por algún motivo tienes que ausentarte, te sugiero que te pongas en contacto con tus colegas para ponerte al tanto de los temas tratados y actividades en clase. 
 
 Además, deberás participar "activamente" en clase. Una participación activa significa que debes estar preparado para hablar con los demás sobre los materiales del curso y para responder preguntas de tu profesor en caso de ser necesario. 
 
@@ -284,3 +287,4 @@ Las laptops y tablets pueden ser utilizadas EXCLUSIVAMENTE para tomar notas y pr
 ## Mayo 29: Temas Especiales II
 
 ## Junio 3: Exámen 3
+
