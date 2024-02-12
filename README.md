@@ -2,6 +2,6 @@
 Contiene materiales de la clase Métodos Cuantitativos Aplicados II ofrecida en la licenciatura en Ciencias Políticas y Relaciones Internacionales del Centro de Investigación y Docencia Económicas (CIDE, México). 
 
 # Clases
-| Tema                                                         | Presentación                                                                        |
-| -----------------------------------------------------------------| ------------------------------------------------------------------------------------ |
-|Repaso de Probabilidad                 | Clase|
+| Fecha  | Tema                                                         | Presentación                                                                        |
+| ----------| -------------------------------------------------------| ------------------------------------------------------------------------------------ |
+| Febrero 14 | Repaso de Probabilidad                 | Clase|
