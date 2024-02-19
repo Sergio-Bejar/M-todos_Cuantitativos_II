@@ -5,4 +5,4 @@ Contiene materiales de la clase Métodos Cuantitativos Aplicados II ofrecida en 
 | Fecha  | Tema                                                         | Presentación                                                                        |
 | :----------:| :-------------------------------------------------------:| :------------------------------------------------------------------------------------: |
 | Febrero 14 | Repaso de Probabilidad                 | [Clase](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/probabilidad.pdf)|
-|Febrero 19 | Probabilidad 1 | [Presentacion](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/proba1.pdf) |
+|Febrero 19 | Probabilidad 1 | [Presentación](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/proba1.pdf) |
