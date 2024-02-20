@@ -5,10 +5,10 @@ output:
     latex_engine: pdflatex # use xelatex here instead! I recommend it, but this is minimal reprex
     dev: cairo_pdf # I typically comment this out  if latex_engine: pdflatex
     slide_level: 3 # I prefer this, but I won't force it on you.
-title: Repaso de Probabilidad
-subtitle: Clase 1
-author: Sergio Béjar
-institute: Departamento de Estudios Políticos
+title: Repaso de Probabilidad 1
+subtitle: Febrero 19, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
 # titlegraphic: "`r paste0(Sys.getenv('HOME'), '/Dropbox/stockholm/su-logotyp.png')`"
 # scaletg: .9 # Optional, proportional (0, 1) to paper width. Defaults to .3
 # titlegraphshift: "\\vspace{6cm}" # Optional, you can delete this if you want.
@@ -50,7 +50,9 @@ library(stevemisc)
 
 # Objetivos para hoy
 
-- Discutir probabilidad y mate básica. Son cosas que debemos saber de cualquier forma. 
+- Las próximas dos clases las vamos a dedicar a repasar conceptos básicos de probabilidad. 
+
+- Hoy nos enfocaremos en entender (i) probabilidad de eventos simples, (ii) probabilidad de dos eventos, y (iii) teorema de Bayes. 
 
 # Probabilidad
 ### Probabilidad
@@ -68,7 +70,7 @@ Consciente o inconscientemente, siempre pensamos en términos probabilísticos.
 La teoría de la probabilidad es la forma matemática de modelar la realidad incierta. 
 Probability theory is a precursor to statistics and applied mathematics.
 
-## Probabilidad Básica
+## Probabilidad
 ### Reglas de Probabilidad
 
 Estas son algunas (no todas) reglas de probabilidad imporrtantes. 
@@ -78,265 +80,502 @@ Estas son algunas (no todas) reglas de probabilidad imporrtantes.
 2. Las probabilidades deben satisfacer la desigualdad 0 $\le$ *p* $\le$ 1.
 3. La suma de las probabilidades en el espacio muestra debe ser igual a 1.
 	- Formalmente: $\Sigma_{E_i \in S} \enspace p(E_i) = 1$
-4. Si el evento *A* y evento *B* son *independendientes*, la **probabilidad conjunta** de que ocurran los dos es *p*(*A,B*) = *p*(*A*) * *p*(*B*).
-5. Si la probabilidad del evento *A* depende de que el evento *B* haya ocurrido, la **probabilidad condicional** de *A* "dado" *B* es un poco diferente.
 
-$$
-    p(A \thinspace | \thinspace B) = \frac{p(A , B)}{p(B)}
-$$
+## Probabilidad de un evento	
+### PROBABILIDAD DE EVENTOS SIMPLES
 
-### Reglas de Probabilidad
+1. Cuando los resultados de un evento (o experimento) no pueden ocurrir al mismo tiempo, se dice que son *mutuamente excluyentes*.
+2. Si un resultado cualquiera tiene la misma probabilidad de ocurrir que todos los demás, se dice que todos son *igualmente probables*. 
 
-La probabilidad condicional implica que los eventos nos son completamente independientes. 
-
-- es decir, se "superponen" o "intersectan".
-
-Por lo tanto, tenemos que conocer otras dos reglas de probabilidad.  
-
-$$
-    \text{\textbf{Probabilidad de Uniones:}} \quad p(A \cup B) = p(A) + p(B) - p(A \cap B)
-$$
+Si el experimento puede tener *n* resultados igualmente probables y mutuamente excluyentes, *r* número de los cuáles corresponden a la ocurrencia de algun evento **A**, entonces la probabilidad de que **A** ocurra es:
 
 
 $$
-    \text{\textbf{Probabilidad de Intersecciones:}} \quad p(A \cap B) = p(A) + p(B) - p(A \cup B)
-$$
-
-### Algunas Aplicaciones Simples
-
-Empecemos con un diagrama de Venn. Asumimos:
-
-- Probabilidad de ser hombre (i.e. *p*(*A*)) = .5
-- Probabilidad de ser obeso (i.e. *p*(*B*)) = .3
-
-Queremos saber:
-
-- ¿Cuál es la probabilidad de que alguien sea hombre *ú* obeso?
-- ¿Cuál es a probabilidad de que alguien sea obeso, dado que es hombre?
-
-### Algunas Aplicaciones Simples
-
-¿Cuál es la probabilidad de que alguien sea hombre *ú* obeso?
-
-- Esta pregunta se refiere a una probabilidad de uniones.
-- $p(A \cup B) = p(A) + p(B) - p(A \cap B)$ = .5 + .3 - .1 = .7
-- Restamos la intersección porque algunos hombres son obesos.
-- Probabilidad de ser una mujer no obesa: 1 - .7 = .3
-
-¿Cuál es a probabilidad de que alguien sea obeso, dado que es hombre?
-
-- Esta es una probabilidad condicional.
-- $p(A \thinspace | \thinspace B) = \frac{p(A , B)}{p(B)}$ = $\frac{.1}{.5} = .2$
-
-Siempre podemos derivar reglas más importantes y complejas de las reglas de probablidad básicas. 
-
-### Probabilidad Total y Teorema de Bayes
-
-Recordar: $p(A \thinspace | \thinspace B) = \frac{p(A , B)}{p(B)}$ . Entomces: *p*(*A, B*) = *p*(*A* | *B*) * *p*(*B*).
-
-- Además: *p*(*B, A*) = *p*(*B* | *A*) * *p*(*A*).
-- Entonces, obviamente: *p*(*A, B*) = *p*(*B, A*).
-- Por lo tanto: *p*(*B* | *A*) * *p*(*A*) = *p*(*A* | *B*) * *p*(*B*).
-
-Si lo queremos isolar *p*(*B* | *A*), simplemente lo dividimos por *p*(*A*).
-
-$$
-    p(B \thinspace | \thinspace A) = \frac{p(A \thinspace | \thinspace B) * p(B)}{p(A)}
-$$
-
-### Teorema de Probabilidad Total y Bayes
-
-Es un teorema interesante por sí solo. Es el **Terorema de Probabilidad Total**.
-
-- También lo llamamos **Teorema de Bayes**.
-
-Con solo dos resultados posibles (*B* and ~*B*).
-
-$$
-	p(B \thinspace  | \thinspace  A) = \frac{p(A \thinspace | \thinspace B)p(B)}{p(A \thinspace  | \thinspace B)p(B) + p(A \thinspace |\sim B)p(\sim B)}
-$$
-
-### Una aplicación: El Error del Investigador
-
-Assumimos el siguiente escenario: un investigador muy cuidadoso está recolectando evidencias contra un acusado.
-
-- Las huellas digitales coinciden, lo que sucede con una probabilidad aleatoria de una vez en un millón. 
-- Puesto de otra forma: $p(\text{fingerprint} \thinspace  | \thinspace \text{innocent} = \frac{1}{1000000}$) .
-
-¿Qué crees que hará el investigador?
-
-### Una aplicación: El Error del Investigador
-
-Argumentar que la probabilidad de inocencia es una en un millón. 
-
-- En resúmen: los investigadores rutinariamente se olvidan de que *p*(*B* | *A*) != *p*(*A* | *B*)!
-
-### El caso de Sally Clark
-
-Algunos detalles sobre el caso:
-
-- Sally Clark era una abogada británica.
-- 13 Dic 1996: su primer hijo muere en la cuna a las 11 semanas.
-- 26 Ene 1998: su segundo hijo muere a las 8 semanas.
-- 23 Feb 1998: Clark es arrestada acusada de doble asesinato.
-- Ella sufría síntoms de depresión post-parto.
-- Los dos bebés tenían evidencias de trauma (ligados a intentos de resucitación).
-
-### El caso de Sally Clark
-
-El el juicio, los investigadores presentaron a un espcialista pediátrico que estimo que la probabilidad de muerte en una cuna de dos bebés saludables era de 1 en 73 milllones. 
-
-- Poniéndolo de otra forma: $p(\text{two crib deaths} \thinspace  | \thinspace \text{innocent} = \frac{1}{73000000}$) .
-- Los investigadores alegaron: $p(\text{innocent} \thinspace  | \thinspace \text{two crib deaths} = \frac{1}{73000000}$) .
-
-9 Nov 1999: Sally Clark fue sentenciada a prisioón en vida.
-
-### El error en este caso
-
-Vamos a llenar los blancos para ilustrar el error. Va el teorema reelaborado:
-
-$$
-	p(H \thinspace  | \thinspace  D) = \frac{p(D \thinspace | \thinspace H)p(H)}{p(D \thinspace  | \thinspace H)p(H) + p(D \thinspace | \thinspace A)p(A)}
-$$
-
-Aumimos:
-
-- *H* = ambos bebés fallecen de muerte en cuna.
-	- $p(H) = \frac{1}{100000}$ . Sí, el experto pediátrico confundió la probabilidad conjunta con la condicional. 
-- *D* = ambos bebés fallecen.
-	- Trivialmente, *p*(*D* | *H*) = 1.
-- *A* = ambos bebés mueren de otras causas (i.e. homicidio).
-	- *p*(*A*) = 1 - *p*(*H*).
-- $p(D \thinspace | \thinspace A) = \frac{30}{650000}$ in este caso.
-
-Hay *muchas* piezas moviéndose en este caso, pero nos sirve para ilustrar el problema. 
-
-### El error en este caso
-
-
-
-\begin{eqnarray}
-p(H \thinspace  | \thinspace  D) &=& \frac{p(D \thinspace | \thinspace H)p(H)}{p(D \thinspace  | \thinspace H)p(H) + p(D \thinspace | \thinspace A)p(A)}     \nonumber \\
-   &=& \frac{.00001}{.00001 +.0000046 *(1 - .00001)} \nonumber \\
-   &=& \frac{.00001}{.0000145} \nonumber \\
-   &=& .689 \nonumber
-\end{eqnarray}
-
-
-En otras palabras, la probabilidad de que Sally Clark fuera inocente era mucho mas alta del testimonio dado por los investigadores. 
-
-
-
-### Sally Clark
-
-La Sociedad Británica de Estadística eventualmente encontró el error y lo condenó.
-
-- Ante la falta de contexto apropiado (i.e. la probabilidad de que una madre asesinará a sus dos hijos consecutivamente), la condena a Sally Clark fue erronea.
-
-Clark fue exhonerada en el 2003 y murió en 2007. 
-
-### Conteo, Permutaciones y Combinaciones
-
-¿Qué significa esto?
-
-- Si tenemos un número específico de pasos individuales...
-- ...cada uno tienen un conjunto de alternativas...
-- ...entonces el número total de alternativas es el producto de ellas en cada paso.
-
-Entonces, para 1, 2, ... *k* características diferentes, multiplicamos el corresponsiente $n_1, n_2, \ldots, n_k$ número de características.
-
-### Cuatro Métodos de Conteo
-
-Una forma de conteo sigue reglas de **ordenamiento** y **reemplazo**.
-
-1. Ordenado, con reemplazo
-2. Ordenado, sin reemplazo
-3. No ordenado, sin reemplazo
-
-Hay un cuarto método (no ordenado, con reemplazo), aunque intuitivo no se usa mucho. No lo vamos a ver. 
-
-### Ordenado, son Reemplazo
-
-Es el primero y más fácil de los métodos.
-
-- Digamos que tenemos *n* objetos (e.g. una baraja de 52 cartas).
-- Queremos escoger *k* < *n* objectos (por ejemplo: 5 cartas).
-- Con reemplazo: ponemos la carta de regreso en la baraja y volvemos a escoger.
-
-### Ordenado, con Reemplazo
-
-Por el **Teorema Fundamental de Conteo**, siempre hay *n* selecciones para cada una de las 5 etapas de decisión.
-
-- Puesto de otra forma: es posible escoger un Rey de Corazones 5 veces.
-- El número total de combinaciones = $n^k$ = $52^5$ = 380,204,032.
-
-
-### Ordenado, sin Reemplazo
-
-
-- En este caso, una vez que tescogemos el Rey de Corazones, se va de la baraja. 
-- Entonces, el número de cartas se reduce en cada etapa. 
-Formally:
-
-$$
-	n * (n -1) * (n - 2) * (n - 3) * \ldots * (k + 1) * k = \frac{n!}{(n-k)!}
-$$
-
-Nota: ! = factorial. 5! = 5 * 4 * 3 * 2 * 1.
-
-- En este ejemplo,  $\frac{52!}{(52-5)!} = 311,875,200$ .
-
-### No ordenado, sin Reemplazo
-
-Un poco más complicado, pero todavía común.
-
-- Informalmente: como ordenado sin reemplazo, pero no podemos ver el orden.
-
-Supongamos que estamos escogiendo pelotas de colores de una urna *S* = { Blanca, Roja }.
-
-- Aquí, escoger RBR, RRB, and BRR son equivalentes.
-
-Esto genera una pequeña modificación en la fórmula.
-
-$$
-	\frac{n!}{(n-k)!k!} = {n \choose k}
-$$
-
-### Una Aplicación: Muestra Aleatoria de una Población
-
-Supongamos que tenemos una población de 150. Queremos entrevistar a 15. ¿Cuántas combinaciones diferentes tenemos?
-
-$$
-	\text{\textbf{Ordenado, con Reemplazo:}} \quad  n^k = 150^{15} = 4.378939 * 10^{32}
+    P(A) = \frac{r}{n} = \frac{Resultados \thinspace Favorables}{Total \thinspace de \thinspace Resultados}
 $$
 
 
-$$
-	\text{\textbf{Ordenado, sin Reemplazo:}} \quad \frac{n!}{(n-k)!} = 2.123561 * 10^{32}
-$$
+### EJEMPLOS PROBABILIDAD DE EVENTOS SIMPLES
+
+**Ejemplo 1**: Encontrar la probabilidad de sacar una carta de color negro, al azar, de una baraja común y corriente. 
 
 $$
-	\text{\textbf{No ordenado, sin Remplazo:}} \quad {n \choose k} = {150 \choose 15} = 1.623922 * 10^{20}
+    P(sacar \thinspace una \thinspace carta \thinspace negra) = \frac{26}{52} = \frac{1}{2}
+$$
+	
+**Ejemplo 2:** Encontrar la probabilidad de sacar una espada al azar.
+
+$$
+    P(sacar \thinspace una \thinspace espada) = \frac{13}{52} = \frac{1}{4}
+$$
+	
+**Ejemplo 3:** Encontrar la probablidad de sacar un as de espadas al azar.  
+
+$$
+    P(sacar \thinspace un \thinspace as \thinspace de \thinspace espadas) = \frac{1}{52} 
 $$
 
-### Otra : Formación de Gobierno de Coalición
+## Probabilidad de dos eventos
+### PROBABILIDAD DE DOS EVENTOS
 
-Va una aplicación de política europea.
+Para calcular la probabilidad de eventos más complicados (que pueden ser considerados como combinaciones de eventos) necesitamos algunas reglas. 
 
-- Supongamos que tenemos tres partidos (Liberal, Demócrata Cristiano, Verdes).
-- Liberals tienen 6 miembros senior. DCs tienen 5 miembros senior. Verdes tienen 4 miembros senior.
 
-Cuántas formas distintas hay de escoger un gabinete con 3 liberales, 2 demócratas cristianos y 3 verdes? 
+1. La probabilidad de que ocurra el Evento B, dado que el Evento A ya se ha presetado (o es seguro de presentarse) se llama *probabilidad condicional de B* y se simboliza de la siguiente forma:
 
-### Formación de Gobierno de Coalición
+$$
+    P(B \thinspace | \thinspace A)
+$$
 
-Lo podemos resolver con la regla de conteo **No ordenado, sin reemplazo**.
+**Ejemplo:** Sacamos dos cartas de una baraja sin reemplazar la primera (i.e. distribución sin reemplazo). El Evento A consiste en sacar una espada en el primer intento. Calcular la probabilidad de sacar una espada en el Evento B. 
 
-- No importa el orden.
-- Sólo hay que seleccionar el número de miembros por partido que se requiere. 
+$$
+    P(sacar \thinspace espada \thinspace en \thinspace B \thinspace | \thinspace sacar \thinspace espada \thinspace en \thinspace A) = P(B \thinspace | \thinspace A) =\frac{12}{51} 
+$$
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+Se puede demostrar que para cualquier par de eventos A y B, 
+
+$$
+    P(AB) = P(A)*P(B \thinspace | \thinspace A)
+$$
+
+**Ejemplo:**: Encontrar la probabilidad de sacar una espada en dos intentos sucesivos, sin reemplazar la primera carta. 
+
+$$
+    P(A) = \frac{13}{52}= \frac{1}{4}
+$$
+
+$$
+   P(B \thinspace | \thinspace A) = \frac{12}{51} = \frac{4}{17}
+$$
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+Si la ocurrencia o no ocurrencia del Evento A no afecta la ocurrencia del Evento B, entonces se conocen como *independientes*. Simbólicamente:
+
+$$
+   P(A \thinspace | \thinspace B) = P(A)
+$$
+  y
+
+$$  
+   P(B \thinspace | \thinspace A) = P(B)
+$$   
+
+**Ejemplo:** Tenemos 2 dados, uno negro y uno rojo, y una baraja. Calcular la probabilidad de que el evento A, sacar una espada en un intento, y el B, tirar un total de 7 con dos dados ocurran. 
+
+
+$$
+  P(A) = \frac{1}{4}
+$$
+$$
+  P(B) = \frac{1}{6}
+$$
+$$
+  P(AB) = P(A)*P(B) = \frac{1}{24}
+$$
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+La probabilidad de que **por lo menos** uno de los eventos A y B ocurra la vamos a denotar como *P(A + B)*. Y, 
+
+$$ 
+   P(A+B) = P(A) + P(B) - P(AB)
+$$
+
+Esta fórmula es válida para dos eventos cualesquiera, dependientes o independientes, ya sean mutuamente excluyentes o no. 
+
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+**Ejemplo:** Calcular la probabilidad de que de una baraja se saque una espada o una carta con figura, o ambas al primer intento. 
+
+Evento A: sacar una espada.
+Evento B: sacar una carta con figura.
+
+$$
+    P(A) = \frac{13}{52}
+$$
+
+En cada palo hay 3 cartas con figura, entoces
+
+$$
+   P(B \thinspace | \thinspace A) = \frac{3}{13}
+$$
+
+Por tanto:
+$$
+    P(AB) = \frac{13}{52}.\frac{3}{13} = \frac{3}{52}
+$$
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+Nos falta calcular la probabilidad del Evento B (i.e. sacar una carta con figura)
+
+$$ 
+   P(B) = \frac{12}{52}
+$$
+De tal forma que la probabilidad de sacar una espada, una carta con figura o ambas es: 
+
+$$
+   P(A + B) = \frac{13}{52} + \frac{3}{52} - \frac{3}{52} = \frac{22}{52} = \frac{11}{26}
+$$
+
+### PROBABILIDAD DE DOS EVENTOS (CONT.)
+
+Regresamos al lanzamiento de dos dados (uno negro y uno rojo)
+
+**Ejemplo:**: Calcular la probabilidad de que en un tiro de dos dados occura por lo menos uno de los siguientes eventos:
+
+Evento A: Se obtiene un número par.
+Evento B: se obtiene un número mayor a 8. 
+
+$$
+   P(A) = ?
+$$   
+$$
+    P(B \thinspace | \thinspace A) = ?
+$$
+
+$$
+  P(B) = ?
+$$  
+
+## Resúmen de reglas de probabilidad
+### RECAPITULANDO LAS REGLAS DE PROBABILIDAD QUE HEMOS ACUMULADO
+
+La regla de la suma:
+$$
+   P(A \thinspace o \thinspace B) = P(A) + P(B) - P(B \thinspace | \thinspace A)
+$$
+
+La regla de la suma para eventos mutuamente excluyentes:
+
+$$ 
+   P(A \thinspace o \thinspace B) = P(A) + P(B)
+$$
+La regla de la resta:
+
+$$ 
+   P(A) = 1 - P(No \thinspace A)
+$$
+
+La regla de la multiplicación:
+
+$$ 
+   P(A \thinspace y \thinspace B) = P(B \thinspace | \thinspace A)*P(B)
+$$
+
+Regla especial de multiplicación cuando A y B son independientes:
+
+$$ 
+   P(A \thinspace y \thinspace B) = P(A)*P(B)
+$$
+
+### EJEMPLO REGLA DE LA RESTA
+
+Asumamos que el evento A es obtener al menos un 6 aventando cuatro veces un dado. Calcular la probabilidad de A. 
+
+$$
+  P(No \thinspace A) = \frac{5}{6}
+$$
+Esta es la probabilidad de no sacar un 6 en una tirada del dado. Recordemos que aventamos el dado 4 veces. Entonces:
+
+$$
+  P((No \thinspace A) = (\frac{5}{6})^4 = 0.482
+$$
+La probabilidad de A es dada por:
+
+$$
+  P(A) = 1 = P(no \thinspace A) = 1 - 0.482 = 0.518
+$$
+
+## Teorema de Bayes
+### TEOREMA DE BAYES O LOS FALSOS POSITIVOS 
+
+
+
+**EJEMPLO 1:** La probabilidad de que a un alumno seleccionado al azar le guste hacer ejercicio es 35% y la probabilidad de que le guste beber smoothies es 65%.  Además se sabe que la probabilidad de que a un alumno le guste el smoothie dado que le gusta hacer ejercicio es 40%. Calcular la probabilidad de que a un alumno le guste hacer ejercicio dado que le gustan los smoothies. 
+
+&nbsp;
+
+**Evento A:** Al alumno le gusta hacer ejercicio.
+
+&nbsp;
+
+**Evento B:** Al alumno le gustan los smoothies. 
+
+
+### EJEMPLO 1 BAYES (CONT.) 
+Sabemos que:
+
+$$
+  P(A) = .35
+$$
+
+$$
+  P(B) = .65
+$$
+$$
+  P(B \thinspace | \thinspace A) = .4
+$$
+
+Queremos saber P(A | B)? 
+
+$$
+  P(A \thinspace | \thinspace B) = \frac{P(A)*P(B \thinspace | \thinspace A)}{P(B)} = 0.21
+$$
+Decimos entonces que la probabilidad de que a alumno le gusten los smoothies dado que le gusta hacer ejercicio es 21%
+
+### UN EJEMPLO MAS DEL TEOREMA DE BAYES
+
+**Ejemplo 2:**
+Supongamos que una de cada mil personas estan infectados con un bicho raro. Y supongamos que existe una prueba que es buena, pero no perfecta, para detectarlo. Si la persona tiene el bicho, la prueba sale positiva el 99% de los casos. Pero la prueba también produce algunos **falsos positivos**. Aproximadamente el 2% de quienes no tienen el bicho salen positivos. 
+
+&nbsp;
+
+Esa persona se hace la prueba y sale  positivo. ¿Cuál es la probabilidad de que realmente tenga el bicho? 
+
+&nbsp;
+
+### TEOREMA DE BAYES (CONT.)
+Tenemos dos eventos:
+
+&nbsp;
+
+**Evento A:** El paciente tiene el bicho.
+
+&nbsp;
+
+**Evento B:** El paciente sale positivo. 
+
+&nbsp;
+- Un paciente de cada mil tiene el bicho
+$$
+  P(tener \thinspace bicho) = .001
+$$
+- La probabilidad de un test positivo dado que se tiene la infección es:
+$$
+  P(salir \thinspace positivo \thinspace dado \thinspace que \thinspace bicho) = 0.99
+$$
+
+- La probabilidad de un falso positivo dado que no hay infección:
+$$ 
+   P(positivo \thinspace dado \thinspace que \thinspace no \thinspace tiene \thinspace bicho) = 0.02
+$$
+
+
+- Estamos buscando:
+$$
+  P(A \thinspace | \thinspace B) = ??? = 0.0495
+$$
+
+### EJEMPLO BAYES (CONT.)
+
+Vamos a dividir el espacio muestra en cuatro eventos mutuamente excluyentes. La tabla abajo tiene todas las combinaciones posibles del estado de la infección y el resultado.
+
+|             | A | No A |
+| :---------------- | :------: | ----: |
+|    B   |   A y B   | No A y B |
+|       No B   |   A y No B   | No A y No B |
+
+Encontremos las probabilidades de cada evento en la tabla. 
+
+|        | A | No A | Suma |
+| :----------------: | :------: | ----: | :------------:|
+|    B   |   P(A y B)   | P(No A y B) | P(B)
+|       No B   |   P(A y No B)   | P(No A y No B) | P(No B)
+| | P(A) | P(No A) | 1 |
+
+
+
+
+### EJEMPLO (CONT.)
+
+Calculamos:
+
+$$ 
+  P(A \thinspace y \thinspace B) = P(B \thinspace | \thinspace A)  * P(A)= (.99)*(.001) = .00099
+$$
+
+$$ 
+  P(no \thinspace A \thinspace y \thinspace B) = P(B \thinspace | \thinspace no \thinspace A)  * P(no \thinspace A)= (.02)*(.999) = .01998
+$$
+
+
+$$
+  P(no \thinspace A \thinspace y \thinspace B) = P(B \thinspace | \thinspace no \thinspace A)*P(Not \thinspace A) = (.02)(.999) = 0.01998
+$$ 
+
+|        | A | No A | Suma |
+| :----------------: | :------: | ----: | :------------:|
+|    B   |   .00099   | .01998 | .0297
+|       No B   |   P(A y No B)   | P(No A y No B) | P(No B)
+| | .001 | .999 | 1 |
+
+### LA TABLA FINAL ES:
+
+|        | A | No A | Suma |
+| :----------------: | :------: | ----: | :------------:|
+|    B   |   .00099   | .01998 | .0297
+|     No B  |   .00001   | .97902 | .97903
+| | .001 | .999 | 1 |
+
+De lo que derivamos:
+
+$$
+  P(A \thinspace | B) = \frac{P(A \thinspace y \thinspace  B)}{P(B)}= \frac{.00099}{.0297} = .0472
+$$
+**Menos del 5%** de los que se hacen la prueba son positivos. 
+  
+### EJEMPLO BAYES (CONT.)
+
+En un grupo de 1000 pacientes sólo 21, en promedio, saldrá positivo -- y solo **UNO** de ellos tiene el bicho. Hay 20 **falsos positivos** que vienen del grupo grande de personas que **no están infectadas**. 
+
+
+|        | Bicho | No Bicho | Suma |
+| :----------------: | :------: | ----: | :------------:|
+|    +   |   1   | 20 | 21
+|       No +   |   0   | 979 | 979
+| | 1 | 999 | 1000 |
+
+
+
+
+
+### TEOREMA DE BAYES 
+
+Los pasos anteriores se pueden expresar formalmente con la siguiente fórmula:
+
+$$ 
+   P(A \thinspace | \thinspace B) = \frac{P(A)*P(B \thinspace | \thinspace A)}{P(A)*P(B \thinspace | \thinspace A) + P(No \thinspace A)*P(B \thinspace | \thinspace No \thinspace A)}
+$$
+
+
+# PERMUTACIONES Y COMBINACIONES 
+## PERMUTACIONES 
+
+Cuando cada resultado es igualmente posible, para poder calcular la probabilidad del evento A necesitamos contar el número de elementos en evento A **y** el número de elementos en el espacio muestra.
+
+&nbsp;
+
+**Permutación:** Es el número de formas posibles en que podemos ordenar objetos. 
+
+&nbsp;
+
+**Ejemplo:** Tenemos tres objetos A, B, y C. Hay 6 formas únicas de acomodarlos: {ABC, ACB, BAC, BCA, CAB, CBA}
+
+&nbsp;
+
+¿Cómo podemos calcular el número de permutaciones sin tener que listar cada acomodo posible? 
+
+### PERMUTACIONES (CONT.)
+
+1. Primero podemos escoger A, B, o C.
+2. Una vez que el primer objeto es seleccionado, hay dos formas de escoger el segundo objeto. Esto nos deja con una sola forma para escoger el tercer objeto. 
+
+&nbsp;
+
+Veámoslo en un árbol de decisión. En el árbol, el número total de hojas es igual al número de permutaciones. Entonces, para calcular el número total de hojas solo tenemos que multiplicar secuencialmente el número de ramas en cada nivel (3x2x1)
+
+### PERMUTACIONES (CONT.) 
+
+Generalizando la idea, podemos calcular el número de permutaciones de *k* objetos de un conjunto de *n* objetos únicos, denotado por ~n~P~k~ en donde *k*$\geq$*n* usando la siguiente fórmula:
+
+$$
+   ~n~P~k~ = n * (n-1) *...* (n-k+2) *(n-k+1) = \frac{n!}{(n-k)!}
+$$
+
+! es el *factorial*. Cuando *n* es un número entero no negativo, n! = (n)*(n-1)*...2*1. Nótese que 0! = 1.
+
+### PERMUTACIONES (CONT.)
+
+En el ejemplo previo (i.e. el de los objetos A, B, y C), *n* = 3 y *k* = 3, por lo tanto:
+
+$$
+   ~3~P~3~ = \frac{3!}{(3-3)!} = \frac{3*2*1}{1} = 6
+$$
+**Ejemplo 2**: Calcular la forma en que se pueden arreglar 4 cartas de un total de 13 cartas únicas. 
+
+
+*n* = 13
+*k* = 4
+
+$$
+   ~13~ P ~4~ = \frac{13!}{(13-4)!} = 13*12*11*10 = 17160
+$$
+
+### PERMUTACIONES (CONT.)
+
+**Ejemplo 3:** Si hay 15 estudiantes en una clase, y contamos con seis sillas en la primera fila, ¿cuántos arreglos con dichos estudiantes se pueden hacer en la primera fila?
+
+*n*= ?
+*k*= ?
+
+&nbsp; 
+&nbsp; 
+&nbsp;
+
+3,603,600 es el resultado. 
+
+## COMBINACIONES 
+
+Otro método de conteo son las *combinaciones*. Las combinaciones son parecidas a las permutaciones, pero las primeras ignoran el orden mientras que las segundas no.  
+
+&nbsp;
+
+Esto es, las *combinaciones* son formas de escoger *k* elementos distintos de *n* elementos sin importarnos su órden. Esto es, cuando escogemos 2 elementos, dos permutaciones diferentes, AB y BA, representan un combinación *idéntica*. 
+
+&nbsp;
+
+Dado que el orden no importa, el número de combinaciones *nunca* es mayor al número de permutaciones. 
+
+### COMBINACIONES (CONT.)
+
+Por ejemplo, si escogemos 2 elementos distintos de un total de 3 elementos A, B, C, el número de permutaciones será 6 (i.e. ~3~P~2~), mientras que el número de combinaciones será 3 (AB, AC, BC). 
+
+&nbsp;
+
+De hecho, para calcular el número de combinaciones, primero calculamos permutaciones ~n~P~k~ y las dividimos por *k*!. 
+
+&nbsp;
+
+En el ejemplo anterior, por cada conjunto de dos elementos (e.g., A y B), tenemos 2! formas de acomodarlos (AB y BA) pero estas dos permutaciones cuentan como una sola combinación. 
+
+&nbsp;
+
+Para obttener el número de combinaciones podemos hacer la división entre ~3~P~2~ y 2! que es igual a 3. 
+
+### COMBINACIONES (CONT.)
+
+Recapitulando, el número de **combinaciones** cuando escogemos *k* elementos distintos de *n* elementos es denotada  como ~n~C~k~ 0 $\binom{n}{k}$ y se calcula de la siguiente forma:
+
+
+$$
+   ~n~C~k  = {n \choose k} = \frac{~n~P~k~}{k!} = \frac{n!}{k!(n-k)!}
+$$
+
+### COMBINACIONES (CONT.)
+
+**Ejemplo 1:** Si un club tiene 10 miembros, ¿cuántos comités de tres se pueden formar?
+
+$$
+   {10 \choose 3}  = \frac{10!}{6!(7)!} = 120
+$$
+
+### COMBINACIONES (CONT.)
+
+**Ejemplo 2:** Supongamos que tenemos tres partidos (Liberal, Demócrata Cristiano, Verdes). Los Liberals tienen 6 miembros senior, DCs tienen 5 miembros senior y los Verdes tienen 4 miembros senior.
+
+¿Cuántas formas distintas hay de escoger un gabinete con 3 liberales, 2 demócratas cristianos y 3 verdes? 
+
+&nbsp;
+
+Esta es una sucesión de combinaciones. 
 
 $$
 {6 \choose 3} {5 \choose 2} {4 \choose 3} = \frac{720}{6(6)} * \frac{120}{2(6)} * \frac{24}{6(1)} = 20 * 10 * 4 = 800
 $$
-
 
