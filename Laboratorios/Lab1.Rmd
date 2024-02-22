@@ -1,0 +1,61 @@
+---
+title: "Laboratorio 1"
+output: pdf_document
+date: ""
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instrucciones
+
+Este laboratorio contiene 6 ejercicios (con múltiples incisos) sobre los temas que discutimos en clase esta semana (i.e. Repaso de Probabilidad 1 y 2). Las respuestas deberán ser entregadas en clase el miércoles 28 de febrero. Tienen toda la libertad de trabajar en equipo para resolver los problemas, pero por esta ocasión asegúrense de entregar respuestas individuales. 
+
+
+## Problema 1
+
+Determinar la probabilidad *p* para cada uno de los siguientes sucesos. 
+
+a) La aparición de un número impar en una tirada de un dado equilibrado. 
+b) La aparición de un as, el diez de diamantes o el dos de corazones en una sola extracción de una baraja de 52 cartas. 
+c) La obtención de 7 puntos en una sola tirada de un par de dados. 
+
+## Problema 2
+
+De una caja que contiene 6 bolas rojas, 4 blancas y 5 azules se extrae una al azar. Determinar la probabilidad de que sea:
+
+a) roja.
+b) blanca.
+c) azul.
+d) no roja.
+e) roja o blanca. 
+
+## Problema 3 
+
+Se hacen dos extracciones de una baraja de 52 cartas. Hallar la probabilidad de que las dos cartas extraídas sean ases, siendo las extracciones:
+
+a) con remplazamiento.
+b) sin remplazamiento.
+
+## Problema 4 
+
+Se sacan dos cartas sucesivas (sin reemplazo) de una baraja. Econtrar la probabilidad de que:
+
+a) las dos cartas sean rojas.
+b) las dos cartas sean negras.
+c) que sean del mismo color. 
+
+## Problema 5
+
+El doctor le informa a una mujer de 35 años que 1 de cada 378 mujeres de su edad tienen un bebé con Síndrome de Down (SD). Al someterse al primer utraasonido trimestral, el procedimiento indica que la mujer se encuentra en la categoría de alto riesgo. Por cada 100 casos de SD, 86 mamás reciben un resultado de "alto riesgo" y 14 casos de SD no se pronostican correctamente. Al mismo tiempo, existe una probabilidad de 1 en 20 de que un embarazo normal se pronostique como de "alto riesgo". Dado el resultado del procedimiento, calcular la probabilidad de que:
+
+a) el bebé tenga SD. 
+b) el resultado de la prueba sea un falso positivo. 
+
+## Problema 6
+
+De un total de 5 politólogos y 7 economistas, se forma un comité de 2 politólogos y 3 economistas. ¿De cuántas formas puede formarse?, si:
+
+a) puede pertenecer a él cualquier politólogo o cualquier economista.
+b) un economista determinado debe pertenecer al comité. 
