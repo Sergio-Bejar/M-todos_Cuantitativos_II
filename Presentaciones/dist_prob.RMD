@@ -1,0 +1,532 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex # use xelatex here instead! I recommend it, but this is minimal reprex
+    dev: cairo_pdf # I typically comment this out  if latex_engine: pdflatex
+    slide_level: 3 # I prefer this, but I won't force it on you.
+title: Distribuciones y Funciones de Probabilidad 
+subtitle: Febrero 26, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+# titlegraphic: "`r paste0(Sys.getenv('HOME'), '/Dropbox/stockholm/su-logotyp.png')`"
+# scaletg: .9 # Optional, proportional (0, 1) to paper width. Defaults to .3
+# titlegraphshift: "\\vspace{6cm}" # Optional, you can delete this if you want.
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=F,
+                      fig.path = 'figs/',
+                      cache.path='cache/',
+                      warning=F,
+                      message=F,
+                      fig.width = 14, fig.height = 8.5,
+                      echo=F)
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+
+```{r loadpackages, include=FALSE, cache=FALSE}
+library(tidyverse)
+library(stevemisc)
+library(knitr)
+library(kableExtra)
+
+parab <- function(x) {-x^2/2}
+expparab <- function(x) {exp(-x^2/2)}
+
+```
+
+# Introducción
+### Objetivo de hoy
+
+*Discutir distribuciones de probabilidad*.
+
+### Introducción
+
+La semana pasada repasamos probabilidad y conteo.
+
+- Aunque son conceptos abstractos, constituyen una base important para lo que hacemos en estadística aplicada.
+
+Hoy vamos a hablar de distribuciones de probabilidad
+
+- Nuestra herramienta más importante de inferencia estadística hace supuestos sobre los parámetros dado que conocemos su distribución (por ejemplo, la normal). 
+
+### Recordatorio
+
+Acordémonos de la notación de las *combinaciones*:
+
+\begin{equation}
+  {n \choose k} = \frac{n!}{(n-k)!k!}
+\end{equation}
+
+\bigskip El signo de admiración indica factorial.
+
+- e.g. 5! = 5 * 4 * 3 * 2 * 1.
+
+# Binomial Functions
+## Binomial Theorem
+### Binomial Theorem
+
+El uso más común de la notación de combinaciomes es el **teorema binomial**.
+
+- Para los números reales *X* and *Y* y un entero no negativo *n*,
+
+\begin{equation}
+  (X + Y)^n = \sum \limits_{k=0}^n {n \choose k} x^k y^{n-k}
+\end{equation}
+
+\bigskip
+
+Un caso especial ocurre cuando *X* = 1 y *Y* = 1.
+
+\begin{equation}
+  2^n = \sum \limits_{k=0}^n {n \choose k}
+\end{equation}
+
+La forma general fue derivada por Pascal en 1654. 
+
+### Binomial Theorem
+
+La expansión binomial se incrementa polinomialmente de la siguiente forma:
+
+\begin{eqnarray}
+(X + Y)^0 &=& 1 \nonumber \\
+(X + Y)^1 &=& X + Y \nonumber \\
+(X + Y)^2 &=& X^2 + 2XY + Y^2 \nonumber \\
+(X + Y)^3 &=& X^3 + 3X^2Y + 3XY^2 + Y^3 \nonumber \\
+(X + Y)^4 &=& X^4 + 4X^3Y + 6X^2Y^2 + 4XY^3 + Y^4 \nonumber \\
+(X + Y)^5 &=& X^5 + 5X^4Y + 10X^3Y^2 + 10X^2Y^3 + 5XY^4 + Y^5 
+\end{eqnarray}
+
+Aquí hay que notar la simetría. 
+
+## Triángulo de Pascal
+### Triángulo de Pascal
+
+los coeficientes del  **triángulo de Pascal** resumen los coeficientes en una expansión binomial.
+
+\begin{tabular}{cccccccccccccc}
+$n=0$:& & & &    &    &    &    &  1\\\noalign{\smallskip\smallskip}
+$n=1$:& & & &   &    &    &  1 &    &  1\\\noalign{\smallskip\smallskip}
+$n=2$:& & & &   &    &  1 &    &  2 &    &  1\\\noalign{\smallskip\smallskip}
+$n=3$:& & & &   &  1 &    &  3 &    &  3 &    &  1\\\noalign{\smallskip\smallskip}
+$n=4$:& & & & 1 &    &  4 &    &  6 &    &  4 &    &  1\\\noalign{\smallskip\smallskip}
+$n=5$: & & & 1 &   &  5  &   &  10  &   &  10  &   &  5  &  & 1\\\noalign{\smallskip\smallskip}
+\end{tabular}
+
+### Triángulo de Pascal
+
+Además de la simetría piramidal, el triángulo de Pascal tiene otras características interesantes. 
+
+- Cualquier valor es igual a la suma de los dos números encima de él. 
+- La suma de los elementos de cualquier fila es igual al doble de la suma de los elementos de la suma anterior (i.e. $\sum\limits_{j=0}^k {k \choose j} = 2^k$).
+- Todos los números que se encuentran en el borde del triángulo son iguales a 1. 
+
+El triángulo de Pascal tiene más propiedades matemáticas y estas son algunas de las más famosas.
+
+## Función de Densidad de Probabilidad Binomial
+### Estos tienen relación importante con la estadística 
+
+**Ejemplo**: ¿cuántas veces nos puede salir un águila si lanzamos una moneda 10 veces?
+
+- Espacio muestra *S* = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+- Sacar 10 águilas (o no águilas) es altamente improbable.
+
+### Función de Densidad de Probabilidad Binomial 
+
+*Este es un problema de combinaciones*.
+
+- Para tener 0 águilas, *cada* lanzamiento debe ser un sol.
+- Para sacar sólo un águila, hay más combinaciones posibles.
+
+¿cuántas maneras hay de que una serie de lanzamientos de una moneda resulte en solo un águila?
+
+- Para un número pequeño de lanzamientos podemos ver el triángulo de Pascal. 
+- Para 5 lanzamientos, hay 1 forma de obtener 0 águilas, 5 maneras de obtener 1 águila, 10 formas de obtener 2 y 3 águilas, 5 formas de obtener 4 águilas, y 1 forma de obtener 5 águilas.
+
+### Función de Densidad de Probabilidad Binomial
+
+Con más generalidad podemos usar la **función de densidad de probabilidad binomial** para resolver el ejemplo anterior.
+
+\begin{equation}
+  p(x) = {n \choose x} p^x(1-p)^{n - x}, 
+\end{equation}
+
+donde:
+
+- *x* = la cuenta de "éxitos" o resultados favorables (e.g. número de águilas en una secuencia de lanzamientos)
+- *n* = el número de intentos.
+- *p* = probabilidad de éxito en cualquier intento.
+
+### Función de Densidad de Probabilidad Binomial
+
+**Ejemplo:** ¿Cuál es la probabilidad de obtener cinco soles en 10 lanzamientos de una moneda?
+
+\begin{eqnarray}
+p(x = 5 \thinspace | \thinspace n = 10, p = .5) &=& {10 \choose 5 } (.5)^5(1-.5)^{10-5} \nonumber \\
+&=& (252)*(.03125)*(.03125) \nonumber \\
+ &=& 0.2460938
+\end{eqnarray}
+
+
+En `R`:
+
+```{r, echo=T}
+dbinom (5,10,.5)
+```
+
+### Aplicación: La Decadencia de la Guerra?
+
+
+Pinker (2011) argumenta que la ausencia de guerras mundiales desde la Segunda Guerra Mundial demuestra que hay una disminución de la violencia. Pero:
+
+- Este tipo de guerras son extremadamente raras.
+- Gibler and Miller (2022) codifican 1,958 confrontaciones de 1816 a 2014.
+- De esas: 84 son guerras (*p* = .042)
+- De las guerras, solo 24 son guerras que podríamos decir que son guerras "realmente grandes" (*p* = .012)
+
+### La Decadencia de la Guerra?
+
+
+Estamos en 2024. No hemos observado una guerra de magnitud similar a la Segunda Guerra Mundial en 76 años in. 
+
+Cuál es la probabilidad de que *no* observemos esto donde: 
+
+- *p* = .042, la probabilidad base de guerra vs. no guerra?
+- *p* = .012, la probabilidad base de una guerra "realmente grande"?
+
+
+###
+
+```{r, eval = FALSE, echo=TRUE}
+tibble(num_wars = seq(0:7)-1,
+       base = dbinom(num_wars, 76, .042),
+       rbw = dbinom(num_wars, 76, .012)) 
+
+tibble(num_wars = rep(c(0, 1, 2), 100)) %>%
+  arrange(num_wars) %>%
+  mutate(period = rep(seq(1:100), 3),
+         p = dbinom(num_wars, period, 0.012)) 
+```
+
+###
+
+```{r}
+
+tibble(num_wars = seq(0:7)-1,
+       base = dbinom(num_wars, 76, .042),
+       rbw = dbinom(num_wars, 76, .012)) %>%
+  gather(var, val, -num_wars) %>%
+  mutate(var = ifelse(var == "base", "Tasa Base de Guerra", "Tasa Base de Guerra 'Realmente Grande'")) %>%
+  mutate(lab = round(val, 3)) %>%
+  ggplot(.,aes(as.factor(num_wars), val, fill=var)) +
+  geom_bar(stat = "identity", position = "dodge", color="black") +
+  geom_text(aes(label=lab), vjust=-.5, colour="black",
+            position=position_dodge(.9), size=3.5, family="Open Sans") +
+    theme_steve_web() +
+  labs(title = "La Probabilidad del # de Guerras (Observadas) en 76 Años, Dadas las Tasas Asumidas de Guerra",
+       subtitle = "Sabiendo que la probabilidad de observar un guerra 'realmente grande'es muy pequeña, es altamente probably (p = .404) qur no hayamos observado ninugna en 76 años",
+       fill = "",
+       x = "Número Observado de Guerras", y = "Probabilidad de Este # de Guerras en un Periodo de 76 Años")
+
+```
+
+
+
+###
+
+
+```{r}
+
+tibble(num_wars = rep(c(0, 1, 2), 100)) %>%
+  arrange(num_wars) %>%
+  mutate(period = rep(seq(1:100), 3),
+         p = dbinom(num_wars, period, 0.012)) %>%
+  mutate(cat = case_when(
+    num_wars == 0 ~ "Cero Guerras",
+    num_wars == 1 ~ "Una Guerra",
+    num_wars == 2 ~ "Dos Guerras"
+  ),
+  cat = fct_relevel(cat, "Cero Guerras", "Una Guerra", "Dos Guerras")) %>%
+  ggplot(.,aes(period, p, color=cat, linetype=cat)) +
+  geom_line(size=1.1) +
+  theme_steve_web() +
+  labs(y = "Probabilidad de Observar este # de Guerras en 100 años",
+       x = "",
+       title = "La Probabilidad de Observar un Número Fijo de 'Grandes Guerras' en un Periodo de 100 años",
+       color = "", linetype = "",
+       subtitle = "Después de 76 años, todavía es más probable que todavía no hayamos observado una 'Gran Guerra' que haber observado solo una.")
+
+```
+
+# Funciones Normales
+## Función de Densidad Normal
+### Funciones Normales
+
+Son otro tipo de funciones muy comúnes.
+
+- Los datos se distribuyen de tal forma que la mayoría se concentran alrededor de alguna tendencia central. 
+- Los casos en los extremos ocurren con menos frecuencia.
+
+### Función de Densidad Normal
+
+Lo vamos a modelar con la **función de densidad normal**.
+
+- Algunas veces llamada distribución Gaussiana, llamada así Carl Friedrich Gauss, su descubridor. 
+
+\begin{equation}
+    f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}e \thinspace \{ -\frac{(x -\mu)^2}{2\sigma^2} \},
+\end{equation}
+
+donde: $\mu$ = la media, $\sigma^2$ = la varianza.
+
+### Función de Densidad Normal
+
+Propiedades:
+
+- Las colas tienden asintóticamente hacia 0.
+- El kernel (o núcleo) es una parábola básica.
+- Denotado como una función en lugar de una probabilidad porque la distribución es continua.
+- La distribución es perfectamente simétrica.
+    - La moda/media/mediana son los mismos valores.
+    - *-x* es tan lejos de $\mu$ como *x*.
+    
+### Función de Densidad Normal
+
+*x* sin restricciones. Puede ser cualquier valor en la distribución.
+
+- $\mu$ y $\sigma^2$ son parámetros que definen la forma de la distribución.
+    - $\mu$ define la tendencia central. 
+    - $\sigma^2$ define que tan corta/larga es la distribución.
+    
+## Desmenuzando la Distribución Normal    
+### Desmenuzando la Función de Densidad Normal
+
+Desempaquemos la función de densidad normal (y usemos un poco de `R`).
+
+### Desmenuzando la Función de Densidad Normal
+
+Esta es la función de densidad normal.
+
+\begin{equation}
+    f(x) = \frac{1}{\sqrt{2\pi\sigma^2}}e \thinspace \{ -\frac{(x -\mu)^2}{2\sigma^2} \}
+\end{equation}
+
+Asumamos, para simplificar, $\mu$ = 0 y $\sigma^2$ = 1.
+
+### Desmenuzando la Función de Densidad Normal
+
+Cuando $\mu$ = 0 y $\sigma^2$ = 1, la función de densidad normal es más simple. 
+
+\begin{equation}
+    f(x) = \frac{1}{\sqrt{2\pi}}e \thinspace \{ -\frac{x^2}{2} \}
+\end{equation}
+
+Ahora, grafiquemos en `R`.
+
+```{r shownormald, echo=TRUE, eval=F}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) + 
+  theme_minimal() +
+  stat_function(fun = dnorm, color="#003f5c", size=1.5) 
+```
+
+### 
+
+```{r normald, eval=TRUE, echo=FALSE,  fig.width=14, fig.height=8.5, warning=F, message=F}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) + 
+  theme_minimal() +
+  stat_function(fun = dnorm, color="#003f5c", size=1.5) +
+  theme(plot.title = element_text(size=30)) +
+  labs(title = "Una Distribución Normal Simple",
+       subtitle = "El parámetro mu determina la tendencia central y sigma^2 lo ancho.",
+       x = "", y="")
+```
+
+### Desmenuzando la Función de Densidad Normal
+
+Veámos dentro del exponencial.
+
+- El término dentro de los paréntesis (-$x^2$/2) es una parábola.
+- Al exponenciarlo, lo hacemos asintótico a 0.
+
+### Código de `R`
+
+```{r showexpcode, eval=F, echo=T}
+library(ggplot2)
+parab <- function(x) {-x^2/2}
+expparab <- function(x) {exp(-x^2/2)}
+
+ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = parab, color="#003f5c", size=1.5) +
+  theme_minimal() 
+
+ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = expparab, color="#003f5c", size=1.5) +
+  theme_minimal() 
+```
+
+
+### 
+
+```{r parab, eval=TRUE, echo=FALSE,  fig.width=14, fig.height=8.5, warning=F, message=F}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = parab, color="#003f5c", size=1.5) +
+  theme_minimal()  +
+  theme(plot.title = element_text(size=30)) +
+  labs(title="Una Parábola Básica",
+       subtitle = "Hay que notar que la altura está en el 0 porque la parte negativa voltea la parábola hacia abajo.",
+       x = "", y="") 
+```
+
+### 
+
+```{r expparab, echo=F, eval=T}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) +
+  stat_function(fun = expparab, color="#003f5c", size=1.5) +
+  theme_minimal() +
+  theme(plot.title = element_text(size=30)) +
+  labs(title="Una Parábola Exponencial Negativa",
+       subtitle = "Al exponenciar, comprimímos la parábola, ajustamos la altura , y hacemos las colas asintóticas a 0.",
+       x = "", y="") 
+```  
+
+### Desmenuzando la Distribución Normal
+
+Cuando el número entre paréntesis es cero (i.e. $x = \mu$, aquí: 0), esto se convierte en un exponente de 0.
+
+- *exp*(0) = 1 (inversamente, *log*(1) = 0).
+- El logaritmo de *x* para una base *b* es el valor del exponente que convierte *b* a *x*.
+    - $log_b(x) = a \quad =\Rightarrow \quad b^a = x$
+- Noten como el tope de la curva estaba en 1 en la parábola exponencial. 
+
+### Desmenuzando la Distribución Normal
+
+Teniendo en mente lo anterior, debe ser claro que $\frac{1}{\sqrt{2\pi\sigma^2}}$ (recordar: $\sigma^2 = 1$ en nuestro caso simple) determina la altura de la distribución.
+
+### Desmenuzando la Distribución Normal
+
+Observe: 
+
+```{r sqrt, echo=T}
+1/sqrt(2*pi)
+
+dnorm(0,mean=0,sd=1)
+
+```
+
+La altura de la distribución para $x = 0$ cuando $\mu = 0$ y $\sigma^2 = 1$ es .3989423.
+
+### Desmenuzando la Distribución Normal
+
+Hemos hablado de la altura y la forma de la distribución como una *función*. Pero no hemos dicho nada de las probabilidades.
+
+- La distribución normal es continua. Por tanto, la probabilidad para cada uno de los valores posibles es practicamente 0.
+
+Dicho esto, el área *debajo* de la curva es el dominio completo y es igual a 1. 
+
+- La probabilidad de seleccionar un número entre dos puntos del eje de las Xs es igual al área bajo la curva que está *entre* esos dos puntos. 
+
+
+### Desmenuzando la Función de Densidad Normal
+
+Observemos que:
+
+```{r area, echo=T}
+pnorm(0, mean=0, sd=1)
+
+```
+
+### Desmenuzando la Función de Densidad Normal
+
+\small
+
+```{r showshadehalf, echo=T, eval=F}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) + 
+  theme_minimal() +
+  theme(plot.title = element_text(size=30)) +
+  stat_function(fun = dnorm, 
+                xlim = c(-4,0),
+                size=0,
+                geom = "area", fill="#F66733", alpha=.5) + 
+    stat_function(fun = dnorm, color="#003f5c", size=1.5) 
+
+```
+
+\normalsize
+
+### 
+
+```{r shadehalf, eval=TRUE, echo=FALSE,  fig.width=14, fig.height=8.5, warning=F, message=F}
+ggplot(data.frame(x = c(-4, 4)), aes(x)) + 
+  theme_minimal() +
+  theme(plot.title = element_text(size=30)) +
+  labs(caption="-Infinito a 0 tiene el 50% del área debajo de la curva") + 
+  stat_function(fun = dnorm, 
+                xlim = c(-4,0),
+                size=0,
+                geom = "area", fill="#F66733", alpha=.5) + 
+    stat_function(fun = dnorm, color="#003f5c", size=1.5) +
+  labs(title = "Una Distribución Normal Stándard",
+       subtitle = "Hay que notar que la mitad de la distribución está entre -Infinito y 0.")
+```
+
+
+### 68-90-95-99
+
+```{r thenodes, echo=T}
+pnorm(1,mean=0,sd=1)-pnorm(-1,mean=0,sd=1)
+pnorm(1.645,mean=0,sd=1)-pnorm(-1.645,mean=0,sd=1)
+pnorm(1.96,mean=0,sd=1)-pnorm(-1.96,mean=0,sd=1)
+pnorm(2.58,mean=0,sd=1)-pnorm(-2.58,mean=0,sd=1)
+```
+
+
+###
+
+
+```{r ggplotshade, eval=TRUE, echo=FALSE,  fig.width=14, fig.height=8.5, warning=F, message=F}
+normal_dist("#003f5c","#F66733", "Open Sans") + 
+  theme_minimal() + 
+  theme(plot.title = element_text(size=30)) +
+    labs(title = "El Área por Debajo de la Distribución Normal",
+       subtitle = "Las colas se extienden hacia el infinito y son asintóticas a 0, pero el área completa es igual a 1. 95% de todos los posibles valores están aproximadamente 1.96 unidades standard de la media.",
+       y = "Desidad",
+       x = "")
+```
+
+# Conclusión
+### Conclusión
+
+- Hay mucha información que tenemos que digerir en esta presentación y la anterior. 
+
+- La probabilidad y las funciones de probabilidad son básicas para la estadística inferencial que empezaremos a hacer la próxima clase. 
+
+
+
+
