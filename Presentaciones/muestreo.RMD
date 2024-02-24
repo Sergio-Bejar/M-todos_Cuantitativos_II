@@ -1,0 +1,415 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex # use xelatex here instead! I recommend it, but this is minimal reprex
+    dev: cairo_pdf # I typically comment this out  if latex_engine: pdflatex
+    slide_level: 3 # I prefer this, but I won't force it on you.
+title: Muestreo y Variación Aleatorios 
+subtitle: Febrero 28, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+# titlegraphic: "`r paste0(Sys.getenv('HOME'), '/Dropbox/stockholm/su-logotyp.png')`"
+# scaletg: .9 # Optional, proportional (0, 1) to paper width. Defaults to .3
+# titlegraphshift: "\\vspace{6cm}" # Optional, you can delete this if you want.
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=F,
+                      fig.path = 'figs/',
+                      cache.path='cache/',
+                      warning=F,
+                      message=F,
+                      fig.width = 14, fig.height = 8.5,
+                      echo=F)
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+```{r opts, cache=FALSE, eval=TRUE, echo=FALSE}
+library(tidyverse)
+library(stevemisc)
+```
+
+# Introducción
+### Objetivo para Hoy
+
+*Comenzar nuestra discusión sobre estadística inferencial con muestreo y variación aleatoria*.  
+
+### Llegamos a la Estadística Inferencial
+
+Aquí comenzamos una de las partes más interesantes/importantes para hacer investigación aplicada.
+
+- Ya no sólo estamos interesados en estadística descriptiva.
+
+Queremos hablar de  **estadística inferencial.**
+
+<!-- - Esto es un conjunto de procedimientos que nos permiten hacer inferencias sobre un segmento de la población que no conocemos usando información de una parte de ella. -->
+
+### ¿Qué es la Población?
+
+Términos importantes.
+
+- **Población:** el universo de casos que queremos describir.
+- **Parámetro poblacional:** el segmento desconocido de la población que queremos estimar.
+
+Por ejemplo, las opinión de los mexicanos sobre el despliegue de tropas del ejército en las calles o el desempeño del Congreso.
+
+### Muestreo de la Población
+
+Problema: no tenemos datos de los más de 120 millones de mexicanos.  
+
+- Por lo que tenemos que usar una **muestra**, que es un subconjunto de casos extraidos de la población.
+- Si lo hacemos correctamente, la **muestra estadística** nos va a dar un estimado del parámetro poblacional. 
+
+Cuando tenemos el universo de todos los casos posibles lo llamamos **censo**. 
+
+- Ejemplos: Decisiones de la Suprema Corte, el número de crísis económicas en el mundo.
+
+
+# Propiedades de la Muestra Aleatoria
+### La Muestra Aleatoria
+
+El *muestreo* es un concepto fundamental en la ciencia política y las relaciones internacionales aplicadas. 
+
+- Pero, siempre existe la posibilidad de hacerlo incorrectamente. 
+- Y un muestreo incorrecto tiene implicaciones potenciales muy importantes. 
+
+Un proceso de muestreo apropiado es llamado **muestreo aleatorio**. 
+
+<!-- - Todas las unidades de la población tienen la misma probabilidad de ser incluídas en la muestra. -->
+<!-- - This is analogous to random assignment in experimental design.-->
+- Una muestra aleatoria no tiene **sesgos de selección.**
+<!--	- Esto significa que algunas unidades tienen una probabilidad mayor de ser incluídas en la muestra que otras. -->
+
+Una muestra aleatoria sin sesgos de selección garantiza que no haya error sistemático en la muestra y por lo tanto minimiza la probabilidad de errores en nuestras inferencias. 
+
+
+## Como (No) Obtener una Muestra Aleatoria
+### La Encuesta de Literacy Digest (1936)
+
+El *Literacy Digest* buscaba saber quién iba a ganar la elección presidencial en EEUU en 1936.
+
+- Obutuvo nombres y direcciones de todos los usuarios telefónicos y dueños de coches. 
+- Combinó esos nombres con los de los suscriptores de la revista para crear una muestra de 10 millones de personas. 
+- Mandaron por correo los cuestioanrios y recibieron 2.4 millones respondidos. 
+- **Su conclusión:** Alf London iba a ganar de calle. 
+
+
+**El resultado actual**: Roosevelt ganó de calle y *El Literary Digest* quebró algunos años después. 
+
+### La Encuesta de Literary Digest (1936)
+
+El problema de la encuesta está en su **marco muestral**.
+
+<!-- - Que es el proceso de obtener la muestra de la población. -->
+- Aunque el marco muestral que usaron no es controvertio en estos días, el problema radicó en que estaba compuesto por una mayoría de seguidores de Landon.
+
+
+Enviar encuestas por correo tampoco ayuda porque genera potencialmente **sesgos de respuesta**.
+
+- Los que  *realmente* detestaban Roosevelt tenían más probabilidad de responder.
+
+### La Encuesta de Literacy Digest (1936)
+
+En otras palabras, la muestra estadística era sistemáticamente diferente de los parámetros de población reales. 
+
+
+- Esto es un **sesgo** de libro de texto en la estadística inferencial. 
+
+¿Qué hacemos para no cometer ese error? 
+
+
+### Obtención de Muestras Aleatorias
+
+Las firma encuestadoras usan generadores de números aleatorios. 
+
+- Cada unidad elegible de la población es asignada con un número. 
+- El generador de números aleatoriamente selecciona *n* números entre la población.  
+
+Dado que el proceso es estrictamente aleatorio, cualquier diferencua entre la muestra y los que no son seleccionados tambén es aleatoria. 
+
+
+## Tamaño de la Muestra
+### Error de Muestreo
+
+La eliminación del sesgo *no* elimina completamente el error.
+
+- El muestreo aleatorio introduce un **error de muestreo aleatorio** a propósito.
+- No es perfecto, pero tener un error de muestreo sistemático es mucho peor. 
+
+El error de muestreo aleatorio lo podemos estimar. 
+
+
+### Entendendo el Error de Muestreo Aleatorio (E.M.A.)
+
+El parámetro poblacional que nos interesa se define así:
+
+- Parámetro poblacional = Estadística de la muestra + E.M.A.
+- "E.M.A." = error de muestreo aleatorio.
+
+Hay dos factores que debemos considerar cuando medimos el E.M.A. 
+
+
+1. El tamaño de la muestra.
+2. La variación en el parámetro poblacional.  
+
+$$
+    \textrm{E.M.A.} = \frac{\textrm{Componente de variación}}{\textrm{Componente del tamaño de la muestra}}
+$$
+
+### Entendiendo el Error de Muestreo Aleatorio (E.M.A.)
+
+Notemos que al incrementar el tamaño de la muestra **reducimos** el error de muestreo aleatorio. 
+
+- Sin embargo, el efecto no es lineal.
+- El componente del tamaño de la muestra es la raíz cuadrada del número de observaciones en la muestra. 
+
+
+$$
+    \textrm{Componente del tamaño de la muestra} = \sqrt{n}
+$$
+
+### Tamaño de la Muestra
+
+Manteniendo todo lo demás igual, un incremento en el tamaño de la muestra de 100 a 400 reduce el error de muestreo solo el doble. 
+
+```{r, echo=TRUE}
+28/sqrt(100)
+28/sqrt(400)
+```
+
+Implicación: hay que incrementar el tamaño de la muestra lo más que podamos. 
+
+### Tamaño de la Muestra
+
+Pero incrementar el tamaño de la muestra es muy costoso. 
+
+- Tan costoso que puede incentivar a usar un muestreo no aleatorio. 
+
+Por eso vemos que la mayoría de las encuestas tienen un tamaña de muestra entre 1,000 y 3,000. 
+
+
+### Tamaño de la Muestra
+
+```{r, echo=TRUE}
+(28/sqrt(100))/(28/sqrt(1000))
+(28/sqrt(1000))/(28/sqrt(10000))
+```
+
+## Variación de la Muestra
+### Variación de la Muestra
+
+Si el componente de variación se incrementa, el error de muestreo aleatorio se incremeta.
+
+
+- Hay un estadístico aue mide esta variación: la **desviación estándar**.
+
+<!-- - que tanto el caso varía de la media. -->
+
+Vamos a comparar los siguientes histogramas
+
+ - Histogram 1: alta desviación estándar
+ - Histogram 2: baja desviación estándar
+
+### 
+
+```{r highvar, echo=FALSE, eval=T, fig.width=14, fig.height=8.5}
+n = 20000
+
+tibble(uid = seq(1:n),
+       therm = rbnorm(n, 58, 15, 0, 100, round=TRUE, seed=8675309)) -> highvar
+
+ggplot(highvar, aes(therm)) + 
+  theme_minimal() +
+  theme(plot.title = element_text(size=30)) +
+  geom_histogram(binwidth = 1, alpha=0.8, color="black") +
+  scale_x_continuous(breaks = seq(0, 50, by =10), limits=c(0,100))  +
+  labs(title = "Desviación Estándar Alta",
+       subtitle = "Datos simulados para tener una frontera de distribución normal (distribución beta) con media de 58 y desviación estándar de 15.",
+       y = "Frecuencia", x = "Polarización",
+       caption = "Datos hipotéticos.")
+
+
+```
+
+### 
+
+```{r lowvar, echo=FALSE, eval=T, fig.width=14, fig.height=8.5}
+
+n = 20000
+
+tibble(uid = seq(1:n),
+       therm = rbnorm(n, 58, 6, 0, 100, round=TRUE, seed=8675309)) -> lowvar
+
+ggplot(lowvar, aes(therm)) + 
+  theme_minimal() +
+  theme(plot.title = element_text(size=30)) +
+  geom_histogram(binwidth = 1, alpha=0.8, color="black") +
+  scale_x_continuous(breaks = seq(0, 100, by =10), limits=c(0,100))  +
+  labs(title = "Desviación Estándar Baja",
+       subtitle = "Datos simulados para tener una frontera de distribución normal (distribución beta) con media de 34 y desviación estándar de 6.",
+       y = "Frecuencia", x = "Polarización",
+       caption = "Datos hipotéticos.")
+
+```
+
+### Calculando la desviación Estándar
+
+Vamos a calcular la desviación estándar
+
+- Asumimos que conocemos los parámetros poblacionales, *N* y \(\mu\).
+
+*La notación anterior significa lo siguiente*:
+
+- *N* es el númro de casos en la población. *n* se refiere al tamaño de la muestra.
+- \(\mu\) es la medida de tendencia central en la población. \(\bar{x}\) es la media muestral.
+
+Las letras griegas se refieren a propiedades de la población no de la muestra. 
+
+### Calculando la Desviación Estándar
+
+1. Restamos \(\mu\) de cada valor en la población.
+2. Elevamos al cuadrado la diferencia para cada observación.
+	- La suma de las desviaciones debe ser igual a 0.
+3. Sumamos todas las desviaciones al cuadrado.
+	- Esta es la suma de desviaciones al cuadrado.
+4. Calculamos la media aritmética para la suma de desviaciones al cuadrado.
+	- Esta es la **varianza**.
+	<!-- - Mide que tan dispersos estan los valores en la población. -->
+5. Sacamos la raíz cuadrada de la varianza.
+
+
+### Calculando la Desviación Estándar
+
+![]("/Users/sergiobejar/Downloads/tab62.pdf")
+
+
+
+## Error Estándar de la Media Muestral a Sample Mean
+### Error Estándar de la Media Muestral
+
+El muestreo aleatorio reduce el sesgo pero genera error aleatorio.
+
+- Queremos eliminar el error aleatorio lo más posible. 
+- No es tan malo como el error sistemático pero sigue siendo ruido. 
+
+Y lo podemos hacer (de nuevo) incrementamdo el tamaño de la muestra. 
+
+- Consideremos los dos gráficos siguientes.
+- \(\mu\) es 58 in ambos paneles, pero la desviación estándar \(\sigma\) es mayor en el primero que en el segundo.
+
+Es difícil eliminar la variación natural en la población, pero incrementando el tamaño de la muestra obtenemos estadísticas más creíbles. 
+
+
+### 
+
+```{r samplehighvar, echo=F, eval=T, fig.width=14, fig.height=8.5}
+sample_sizes <- c(10, 25, 100, 400, 1000)
+
+Samps = list() 
+set.seed(8675309)
+for (j in sample_sizes) {
+   Samps[[paste0("Sample size: ", j)]] = data.frame(sampsize=j, samp=sapply(1:10, function(i){ x <- sample(highvar$therm, j, replace = TRUE) }))
+}
+
+Samps %>%
+  map_df(as_tibble) %>%
+  gather(samp, value, samp.1:samp.10) -> Samps
+
+Samps %>%
+    group_by(sampsize, samp) %>%
+    summarize(sampmean = mean(value)) %>%
+    ggplot(., aes(as.factor(sampsize),sampmean)) + 
+    geom_point(size=3, color="black", alpha=0.5) +
+    theme_minimal() + 
+    theme(plot.title = element_text(size=20)) +
+    geom_hline(yintercept = mean(highvar$therm), linetype="dashed") +
+    labs(x = "Tamaño de la Muestra",
+         y = "Medias Muestrales",
+         title = "Díez Medias Muestrales Obtenidas Variando el Tamaño de la Muestra en una Población con Alta Varianza",
+         subtitle = "Los rendimientos decrecientes de incrementar el tamaño de la muestra comienzan al rededor de las 400 observaciones aunque el spread en estos datos simulados es bastante grande.",
+         caption = "Datos hipotéticos generados con los siguientes parámetros: media= 58, d.e.= 15, n=20,000")
+```
+
+
+###
+
+```{r samplelowvar, echo=F, eval=T, fig.width=14, fig.height=8.5}
+Samps = list() 
+set.seed(8675309)
+for (j in sample_sizes) {
+   Samps[[paste0("Sample size: ", j)]] = data.frame(sampsize=j, samp=sapply(1:10, function(i){ x <- sample(lowvar$therm, j, replace = TRUE) }))
+}
+
+Samps %>%
+  map_df(as_tibble) %>%
+  gather(samp, value, samp.1:samp.10) -> Samps
+
+Samps %>%
+    group_by(sampsize, samp) %>%
+    summarize(sampmean = mean(value)) %>%
+    ggplot(., aes(as.factor(sampsize),sampmean)) + 
+    geom_point(size=3, color="black", alpha=0.5) +
+    theme_minimal() + 
+    theme(plot.title = element_text(size=20)) +
+    geom_hline(yintercept = mean(lowvar$therm), linetype="dashed") +
+    labs(x = "Tamaño de la Muestra",
+         y = "Medias Muestrales",
+         title = "Díez Medias Muestrales Obtenidas Variando el Tamaño de la Muestra en una Población con Alta Varianza",
+         subtitle = "Los rendimientos decrecientes de incrementar el tamaño de la muestra comienzan al rededor de las 400 observaciones aunque el spread en estos datos simulados es bastante grande.",
+         caption = "Datos hipotéticos generados con los siguientes parámetros: media= 58, d.e.= 15, n=20,000")
+
+```
+
+
+### Error Estándar de la Media Muestral
+
+La fórmula para calcular el error de muestreo aleatorio es:
+
+$$
+    \textrm{Error Estándar de la Media Muestral} = \frac{\sigma}{\sqrt{n}}
+$$
+
+Asumimos \(\bar{x}\) = 59, \(\sigma\) = 24.8, *n* = 100.
+
+- Error Estándar = 2.48
+- Podemos decir que el parámetro poblacional está entre 56.2 y 61.48
+- Dado que \(\mu\) = 58, sabemos que es cierto.
+
+# Conclusión
+### Conclusión
+
+Podemos obtener un estimado razonable de un parámetro poblacional si hacemos un muestreo aleatorio de la población. 
+
+- El estimador muestral es un buen pronóstico del parámetro poblacional cuando sabemos el valor de  \(\mu\) a priori.
+
+Todavía no sabemos:
+
+- ¿Qué tan probable es que \(\bar{x}\) se encuentre a un error estándar de \(\mu\)?
+- ¿Quê pasa si no sabemos \(\mu\), pero tenemos una idea de lo que puede ser?
+
