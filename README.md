@@ -7,5 +7,5 @@ Contiene materiales de la clase Métodos Cuantitativos Aplicados II ofrecida en 
 | Febrero 14 | Repaso de Probabilidad                 | | |
 |Febrero 19 | Probabilidad 1 | [Presentación 1](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/probabilidad_repaso.pdf) |||
 | Febrero 21 | Probabilidad 2 | Ver Presentación 1 | [Laboratorio 1](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab1.pdf) ||
-| Febrero 26 | Distribuciones de Probabilidad | [Presentación 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/distribuciones_probabilidad.pdf) |||
+| Febrero 26 | Distribuciones de Probabilidad | [Presentación 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/distribuciones_probabilidad.pdf) ||A (4.2-4.3); DBC (C. 3)|
 | Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/muestreo_aleatorio.pdf) |||
