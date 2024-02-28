@@ -1,0 +1,356 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex # use xelatex here instead! I recommend it, but this is minimal reprex
+    dev: cairo_pdf # I typically comment this out  if latex_engine: pdflatex
+    slide_level: 3 # I prefer this, but I won't force it on you.
+    theme: metropolis
+title: Intervalos de Confianza 
+subtitle: Marzo 4, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+# titlegraphic: "`r paste0(Sys.getenv('HOME'), '/Dropbox/stockholm/su-logotyp.png')`"
+# scaletg: .9 # Optional, proportional (0, 1) to paper width. Defaults to .3
+# titlegraphshift: "\\vspace{6cm}" # Optional, you can delete this if you want.
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=F,
+                      fig.path = 'figs/',
+                      cache.path='cache/',
+                      warning=F,
+                      message=F,
+                      fig.width = 14, fig.height = 8.5,
+                      echo=F)
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+```{r opts, cache=FALSE, eval=TRUE, echo=FALSE}
+library(tidyverse)
+library(stevemisc)
+library(dqrng)
+
+Poblacion <- rbnorm(250000, mean =42.42, sd = 38.84,
+                     lowerbound = 0, 
+                     upperbound = 100,
+                     round = TRUE,
+                     seed = 123456) 
+
+set.seed(123456) 
+# {dqrng} es rápido para hacer muestreo a escala
+# Esta es la función dqsample()
+Popsamples <- tibble(
+  samplemean=sapply(1:1000000,
+           function(i){ x <- mean(
+             dqsample(Poblacion, 10,
+                    replace = FALSE))
+           }))
+
+```
+
+# Introducción
+### Objetivo(s) 
+
+1. Revisar la lógica del muestreo aleatorio (infinito) de una población conocida. 
+2. Introducir a los estudiantes a los "intervalos de confianza".
+3. Reafirmar cómo hacemos inferencia de una muestra a una población. 
+
+# Pruebas de Hipótesis
+## Un Breve Desvío
+### Un Breve Desvío
+
+En las próximas clases vamos a aprender "pruebas de hipótesis" vis a vis la muestra y la población.
+
+- i.e. ¿Cuál es la probabilidad de nuestra muestra estadística dado el parámetro poblacional?
+
+### ¿Qué es una Hipótesis?
+
+Las hipótesis son declaraciones sobre la relación que existe entre una variable independiente y una variable dependiente. 
+
+- Variable dependiente: lo que queremos explicar.
+- Variable independiente: lo que creemos que explica la variación en la variable dependiente. 
+
+### ¿Qué Deben Decir las Hipótesis?
+
+Las hipótesis deben comunicar lo siguiente: 
+
+1. La causa y el efecto.
+2. El tipo de relación esperada entre las variables.
+3. La unidad de análisis.
+4. Claridad en el tipo de medición que se usa para ambas variables. 
+
+### Tipos de Relaciones Propuestas
+
+- Positiva.
+- Negativa. 
+- Cero.
+- Curvilínea. 
+
+# Revisemos un Ejemplo
+## Haciendo Pronósticos Sobre la Población
+
+Asumamos lo siguiente:
+
+- Tenemos un político que es más odiado que querido.
+- La población (n = 250,000) está evaluando al político usando un termómetro [0:100]
+- Nosotros asignamos los parámetros poblacionales.
+
+Queremos hacer pronósticos sobre la Población en base a muestras de la Población. 
+
+### Creamos los Datos
+
+Revisemos como creamos los datos.
+
+```r
+# rbnorm() de {stevemisc}
+Poblacion <- rbnorm(250000, mean = 42.42, sd = 38.84,
+                     lowerbound = 0, 
+                     upperbound = 100,
+                     round = TRUE,
+                     seed = 123456) 
+```
+
+Vemos cuál es la media y la desviación estándar..
+
+```{r, eval=T, echo=T}
+mean(Poblacion)
+sd(Poblacion)
+
+```
+
+###
+
+```{r population-distribution, echo=F, eval=T, fig.width=14, fig.height=8.5}
+tibble(x = Poblacion) %>%
+  ggplot(.,aes(x)) + 
+  geom_bar(fill="#619cff", alpha = .7, color="black") +
+  #geom_density(fill="#619cff", alpha=.7, color="#619cff") +
+  # geom_histogram(binwidth=.5,aes(y=..density..),alpha=0.7) +
+  theme_minimal() + 
+  theme(plot.title = element_text(size=25)) +
+  geom_vline(xintercept = mean(Poblacion), linetype="dashed") +
+  scale_x_continuous(breaks = seq(0, 100, by=10)) +
+  labs(x = "Rating del Termómetro [0:100]", y = "Número de Observaciones",
+       title = "La Distribución de Ratings de Nuestra Población",
+       subtitle = "Estos datos son una aproximación de la forma y distribución de de los ratings de políticos polarizantes.",
+       caption = "Datos: Simulados para una población de 250,000 donde media = 42.42 y  desviación estándar = 38.84.\nLa línea vertical es la media de la población.")
+
+```
+
+
+
+# Teorema de Límite Central y Distribución Normal
+## Teorema de Límite Central 
+
+El **Terema de Límite Central** sugiere que con un número infinito de muestras de tamaño *n*, extraídas de una población de *N* unidades, las medias muestrales están **distribuídas normalmente**. 
+
+
+Por lo tanto:
+
+- La media de las medias muestrales es igual a $\mu$.
+- El E.M.A. será igual al error estándar de la media muestral. ($\frac{\sigma}{\sqrt{n}}$)
+
+### Código en R
+
+```{r sampmil, echo=T, eval=F, cache=TRUE}
+set.seed(123456) 
+# Usamos {dqrng} que es más eficiente (i.e. rápido) para hacer muestreo a escala 
+# Esta es la función dqsample(), paquete {dqrng}
+Popsamples <- tibble(
+  samplemean=sapply(1:1000000,
+           function(i){ x <- mean(
+             dqsample(Poblacion, 10,
+                    replace = FALSE))
+           }))
+```
+
+
+ 
+###
+
+```{r plotsampmil, echo=F, eval=T, fig.width=14, fig.height=8.5}
+Popsamples %>%
+  ggplot(.,aes(samplemean)) + 
+  geom_density(fill="#619cff", alpha=.7, color="#619cff") +
+  # geom_histogram(binwidth=.5,aes(y=..density..),alpha=0.7) +
+  theme_minimal() +
+  theme(plot.title = element_text(size=25)) +
+  geom_vline(xintercept = mean(Poblacion), linetype="dashed") +
+  stat_function(fun=dnorm,
+                color="#002F5F", size=1.5,
+                args=list(mean=mean(Popsamples$samplemean), 
+                          sd=sd(Popsamples$samplemean))) +
+  scale_x_continuous(breaks = seq(0, 100, by=10)) +
+  labs(x = "Media Muestral", y = "Densdad",
+       title = "Distribución de 1,000,000 de Medias Muestrales, cada una de tamaño 10",
+       subtitle = "Notemos que la distribución es normal y la media de las medias muestrales converge a la media poblacional (línea vertical).",
+       caption = "Datos simulados para una población de 250,000 donde la media = 42.42 y desviación estándar = 38.84.")
+
+```
+
+## Estandarización de Distribución de Muestreo
+### Estandarización
+
+La distribución normal que acabamos de ver no nos permite hacer mucha inferencia.
+
+- Pero la **estandarización de una distribución normal** (o equivaler valores de una distribución normal a una distribución normal estándar) la hará más útil.
+
+\begin{equation}
+    z = \frac{\textrm{Desviación de la Media}}{\textrm{Unidad Estándar}}
+\end{equation}
+
+La unidad estándar varía de acuerdo a lo que queramos.
+
+- Si tenemos una sola muestra aleatoria es igual a la desviación estándar.
+- Si estamos comparando medias de varios muestreos aleatorios, entonces es el error estándar.
+
+
+
+### Estandarización
+
+Mientras mas grande sea el valor de  *z*, mayor es la diferencia con respecto a la media. 
+
+- Cuándo *z* = 0, no hay desviación de la media (obviamente). 
+
+La estandarización nos permite hacer un mejor resúmen de la función normal. 
+
+###
+
+
+```{r ggplotshade, echo=F, eval=T, fig.width=14, fig.height=8.5}
+normal_dist("#002F5F","#002F5F", "Open Sans") + 
+  theme_minimal() +
+   theme(plot.title = element_text(size=25)) +
+  # ^ all from stevemisc
+    labs(title = "El Area Debajo de la Distribución Normal",
+       subtitle = "Las colas se extiended hacia infinito y tienden asintóticamente a 0, pero toda el área suma 1. 95% de todos los posibles valores están a 1.96 unidades estándar de la media.",
+       y = "Densdad",
+       x = "")
+```
+
+
+
+###
+
+```{r plotsampmilz, echo=F, eval=T,  fig.width=14, fig.height=8.5}
+Popsamples %>%
+  mutate(z = (samplemean-mean(samplemean))/sd(samplemean)) %>%
+  # ggplot(.,aes(z)) +  
+  # stat_dots() +
+  # stat_function(fun=dnorm,
+  #               color="#002F5F", size=1.5)
+  ggplot(.,aes(z)) + 
+  geom_density(fill="#619cff", alpha=.7, color="#619cff") +
+  #  geom_histogram(binwidth=.1,aes(y=..density..),alpha=0.7) +
+  theme_minimal() +
+  theme(plot.title = element_text(size=25)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  scale_x_continuous(breaks = c(-4:4)) +
+  stat_function(fun=dnorm,
+                color="#002F5F", size=1.5) +
+  labs(x = "Sample Mean (Standardized)", y = "Density",
+       title = "Distribución de 1,000,000 de Medias Muestrales, Cada una de Tamaño 10",
+       subtitle = "La distribución es normal y la media de medias muestrales converge a la media de la población (línea vertical).",
+       caption = "Datos simulados para una población de 250,000 donde media = 42.42 y desviación estándar = 38.84.")
+```
+
+## Inferencia Usando la Distribución Normal
+### Inferencia Usando la Distribución Normal
+
+¿Qué sigue?  Vamos a asumir el siguiente escenario para ilustrar lo que sigue.
+
+- Tenemos una muestra de 100 personas de la Población que hemos hablado toda la clase (i.e. la de 250,000 personas) 
+
+```{r oursample, cache=T, eval=T, echo=T}
+set.seed(8675309)
+nuestramuestra <- sample(Poblacion, 100, replace = FALSE)
+mean(nuestramuestra)
+```
+
+- No conocemos $\mu$ (sabemos que es 42.46).
+- Y asumimos que conocemos $\sigma$ (aunque sabemos que es 38.89), no muy realista pero nos sirve para este ejemplo...
+- Tenemos una *n* de 100 y $\overline{x}$ de 43.64 .
+
+Nos interesa sacar conclusiones sobre el lugar en el que se encuntra la media poblacional.
+
+### Inferencia Usando la Distribución Normal
+
+Para sacar conclusiones sobre el parámetro poblacional usando la muestra: 
+
+- Debemos tomar en cuenta el ruido generado por el muestreo aleatorio.
+- Pero, nunca vamos a poder estar 100% seguros de que esa conclusión es cierta. 
+
+Un **intervalo de confianza del 95 por ciento** es informativo.
+
+- Podemos estar seguros de que nuestros estimadores muestra estarán (o caerán) en ese intervalo con un 95% de probabilidad. 
+- Lo operacionalizamos de la siguiente forma $\overline{x} \pm (1.96)$*(error estándar).
+
+
+### Inferencia Usando la Distribución Normal
+
+Saquemos el intervalo de confianza para nuestro ejemplo.
+
+- Tenemos $\overline{x}$.
+- También conocemos *n* y asumimos una $\sigma$ conocida.
+- Error Estándar = `r round(sd(Poblacion)/sqrt(length(nuestramuestra)), 3)` ($\frac{\sigma}{\sqrt{n}} = \frac{38.88}{\sqrt{100}} = 3.88$)
+
+Código en R para estimar Error Estándar
+
+    round(sd(Poblacion)/sqrt(length(nuestramuestra)), 3)
+
+
+### Inferencia Usando la Distribución Normal
+
+Ahora debemos sacar los límites (superior/inferior) de nuestro intervalo de confianza al 95% de probabilidad. 
+
+\begin{equation}
+\textrm{Límite Inferior} =  \overline{x} - (1.96)*(e.s.)
+\end{equation}
+
+
+\begin{equation}
+\textrm{Límite Superior} =  \overline{x} + (1.96)*(e.s.)
+\end{equation}
+
+### Estimación en `R`
+
+```{r, echo=T}
+#cálculo del error estándar de la media
+esm <- sd(Poblacion)/sqrt(length(nuestramuestra))
+#intervalo de confianza de la media con 95% de probabilidad
+c(mean(nuestramuestra) - 1.96*esm, mean(nuestramuestra) + 1.96*esm)
+```
+
+### Inferencia Usando la Distribución Normal
+
+Lo que nuestro cálculo anterior significa es:
+
+- que si tomamos 100 muestras de 100 personas cada una (*n* = 100), 95 de esas 100 muestras aleatorias van a tener en promedio una media entre 30.79 y 46.02. 
+
+Hay que notar que por ahora no estamos sacando ninguna conclusión sobre la media poblacional real.  
