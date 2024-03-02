@@ -1,0 +1,164 @@
+---
+title: "Laboratorio 1"
+subtitle: "Respuestas"
+output: pdf_document
+date: ""
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problema 1
+
+Determinar la probabilidad *p* para cada uno de los siguientes sucesos. 
+
+a) La aparición de un número impar en una tirada de un dado equilibrado. 
+
+**RESPUESTA:** Al lanzar un dado hay 6 casos igualmente probables: 1, 2, 3, 4, 5, 6. Sólo 3 son números impares.  Por lo tanto:
+
+$$
+  Pr(sacar \thinspace número \thinspace impar) = \frac{3}{6} = \frac{1}{2} =.5
+$$
+
+
+
+b) La aparición de un as, el diez de diamantes o el dos de corazones en una sola extracción de una baraja de 52 cartas. 
+
+**RESPUESTA:** La baraja tiene 52 cartas y hay 6 formas posibles de obtener el suceso descrito: 4 cartas que son ases, 1 carta que es el 10 de diamantes y 1 carta que es el 2 de corazones. De tal forma:
+
+$$
+  Pr(sacar \thinspace As \thinspace ó \thinspace 10 \thinspace diamantes \thinspace ó \thinspace 2 \thinspace corazones) = \frac{6}{52} = \frac{3}{26} = .115
+$$
+
+
+c) La obtención de 7 puntos en una sola tirada de un par de dados. 
+
+**RESPUESTA:** Tenemos un número de 36 casos posibles, todos igualmente probables. De estos hay 6 formas de obtener una suma de 7. Las formas son: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1). Entonces:
+
+$$
+  Pr(obtener \thinspace suma \thinspace igual \thinspace a \thinspace 7) = \frac{6}{36} = \frac{1}{6} = .166
+$$
+
+
+
+## Problema 2
+
+De una caja que contiene 6 bolas rojas, 4 blancas y 5 azules se extrae una al azar. Determinar la probabilidad de que sea:
+
+a) roja.
+
+**RESPUESTA:**  Vamos a denotar como R, B, y A los sucesos de extraer una bola roja, blanca, y azul respectivamente. Entonces:
+
+$$
+  Pr(R) = \frac{6}{15} = \frac{2}{5} = .4
+$$
+
+b) blanca.
+
+$$
+  Pr(B) = \frac{4}{15} = .266
+$$
+
+c) azul.
+
+$$
+  Pr(A) = \frac{5}{15} = \frac{1}{3} = .333
+$$
+
+d) no roja.
+
+$$
+  Pr(no \thinspace R) = 1- \frac{2}{5} = \frac{3}{5} = .6
+$$
+
+e) roja o blanca. 
+
+$$
+  Pr(R \thinspace + \thinspace B) = \frac{6 + 4}{15} = \frac{2}{3} = .666
+$$
+
+Alternativamente,
+
+$$
+  Pr(R \thinspace + \thinspace B) = 1- Pr(no \thinspace A) = 1 - \frac{1}{3} = \frac{2}{3} = .666
+$$
+
+## Problema 3 
+
+Se hacen dos extracciones de una baraja de 52 cartas. Hallar la probabilidad de que las dos cartas extraídas sean ases, siendo las extracciones:
+
+a) con remplazamiento.
+
+**RESPUESTA:** A es el evento que denota la extracción de un as en el primer lanzamiento y B es el evento que denota la extracción de un as en el segundo lanzamiento. 
+
+$$
+  Pr(ambas \thinspace\ cartas \thinspace ases) = P(AB) = P(A)*P(B) = \frac{4}{52}*\frac{4}{52} = \frac{1}{169} = .006
+$$ 
+
+b) sin remplazamiento.
+
+$$ 
+  Pr(ambas \thinspace cartas \thinspace ases) = P(AB) = P(A)*P(B \thinspace | \thinspace A) = \frac{4}{52} * \frac{3}{51} = \frac{1}{221} = .0045
+$$ 
+
+
+## Problema 4 
+
+Se sacan dos cartas sucesivas (sin reemplazo) de una baraja. Econtrar la probabilidad de que:
+
+a) las dos cartas sean rojas.
+
+$$
+  Pr(2 \thinspace rojas) = \frac{1}{2} * \frac{25}{51} = \frac{25}{102} =.2450
+$$ 
+
+
+
+b) las dos cartas sean negras.
+
+$$
+  Pr(2 \thinspace negras) = \frac{1}{2} * \frac{25}{51} = \frac{25}{102} =.2450
+$$ 
+
+## Problema 5
+
+El doctor le informa a una mujer de 35 años que 1 de cada 378 mujeres de su edad tienen un bebé con Síndrome de Down (SD). Al someterse al primer utraasonido trimestral, el procedimiento indica que la mujer se encuentra en la categoría de alto riesgo. Por cada 100 casos de SD, 86 mamás reciben un resultado de "alto riesgo" y 14 casos de SD no se pronostican correctamente. Al mismo tiempo, existe una probabilidad de 1 en 20 de que un embarazo normal se pronostique como de "alto riesgo". Dado el resultado del procedimiento, calcular la probabilidad de que:
+
+Para resolver este problema primero vamos a ver con que información contamos (i.e. establecer nuestros priors). Para comenzar la probabiidad de que un bebé tenga SD sin ninguna prueba es P(SD) = 1/378 ó .0026. La probabilidad de que la prueba de un resultado de "alto riesgo" cuando el bebé tiene SD es del 86% y lo denotamos como P(AR | SD) = .86 y la probabilidad de un "falso positivo" es del 5%, esto es: P(AR | no SD) = .05. 
+
+a) el bebé tenga SD. 
+
+**RESPUESTA:** Aplicamos la fórmula de Bayes:
+
+$$ 
+   P(SD \thinspace | \thinspace AR) = \frac{P(AR \thinspace | \thinspace SD)*P(SD)}{P(AR \thinspace | \thinspace SD)*P(SD) + P(AR \thinspace | \thinspace no \thinspace SD)*P(SD)} = \frac{.86*.0026}{(.86 * .0026) + (.05 * .997)} = .042
+$$
+
+b) el resultado de la prueba sea un falso positivo. 
+
+**RESPUESTA:** Aplicamos la fórmula de Bayes:
+
+$$
+   P(SD \thinspace | \thinspace no \thinspace AR) = \frac{P(no \thinspace AR \thinspace | \thinspace SD)*P(SD)}{P(no \thinspace AR \thinspace | \thinspace SD)*P(SD) + P(no \thinspace AR \thinspace | \thinspace no \thinspace SD)*P(no \thinspace SD)} = \frac{.14*.0026}{(.14 * .0026) + (.95 * .997)} = .00038
+$$
+
+## Problema 6
+
+De un total de 5 politólogos y 7 economistas, se forma un comité de 2 politólogos y 3 economistas. ¿De cuántas formas puede formarse?, si:
+
+a) puede pertenecer a él cualquier politólogo o cualquier economista.
+
+**RESPUESTA:** 2 politólogos de un total de 5 pueden elegirse de ~5~C~2~ formas. Mientras que 3 economistas de un total de 7 se pueden elegir de ~7~C~2~ formas. 
+b) un economista determinado debe pertenecer al comité. Por lo tanto: 
+
+~5~C~2~ *  ~7~C~2~ = 10*35 = 350
+
+b) un economista determinado debe pertenecer al comité. 
+
+**RESPUESTA:** 2 politólogos de un total de 5 pueden elegirse de ~5~C~2~ formas.
+2 economistas restantes de un total de 6 pueden elegirse de la siguiente forma: ~6~C~2~. Entonces:
+
+~5~C~2~ *  ~6~C~2~ = 10*15 = 150
+
+
