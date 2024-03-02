@@ -9,9 +9,6 @@ title: Distribuciones y Funciones de Probabilidad
 subtitle: Febrero 26, 2024
 author: Prof. Sergio Béjar
 institute: Departamento de Estudios Políticos, CIDE
-# titlegraphic: "`r paste0(Sys.getenv('HOME'), '/Dropbox/stockholm/su-logotyp.png')`"
-# scaletg: .9 # Optional, proportional (0, 1) to paper width. Defaults to .3
-# titlegraphshift: "\\vspace{6cm}" # Optional, you can delete this if you want.
 fontsize: 10pt
 make149: TRUE
 # mainfont: "Open Sans Light" # Try out some font options if xelatex
