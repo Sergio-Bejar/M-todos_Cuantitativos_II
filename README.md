@@ -11,4 +11,4 @@ Contiene materiales de la clase Métodos Cuantitativos Aplicados II ofrecida en 
 | Febrero 26 | Distribuciones de Probabilidad | [Presentación 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/distribuciones_probabilidad.pdf) |||A (4.2-4.3); DBC (C. 3)|
 |||[Script](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Scripts/script1.R)| ||
 Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/muestreo_aleatorio.pdf) ||A (4.4-4.6); DBC (2.3-2.5, 4.1)||
-|Marzo 4-6| Inferencia Estadística: TLC e Intervalos de Confianza | [Presentación 4](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/tlc_int.pdf) | |A (Cap. 5; IK (Cap. 9)||
+|Marzo 4-6| Inferencia Estadística: TLC e Intervalos de Confianza | [Presentación 4](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/tlc_int.pdf) | |A (Cap. 5); IK (Cap. 9)||
