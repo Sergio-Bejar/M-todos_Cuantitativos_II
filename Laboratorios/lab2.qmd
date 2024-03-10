@@ -1,0 +1,54 @@
+
+---
+
+title: "Laboratorio 2"
+
+format: pdf
+
+editor: visual
+
+---
+
+Instrucciones
+
+El laboratorio 2 deberá ser contestado en equipos de 2 o 3 personas (max.) y el archivo con las respuestas lo debes enviar por email a mi correo electrónico (sergio.bejar@cide.edu) a más tardar el viernes 15 de marzo, 2023 a las 12:00pm.  
+
+Ejercicio 1 
+
+Asumamos que la elección presidencial del próximo 2 de junio está empatada antes de que emitas tu voto.  Además, supongamos que el 50% del electorado mexicano apoya a la candidata C, mientras que el otro 50% apoya a la candidata X.  La probabilidad de votar (i.e. votar o no votar) es independiente de la preferencia electoral de cada persona. Dado este escenario, 
+
+a) ¿cuál es la probabilidad de que la elección termine en un empate exacto entre las dos candidatas si el número de votantes es 1,000, 10,000, y 100,000? (15 pts.)  Hint: usa dbinom  para simplificar el trabajo.
+
+b) ¿qué nos dicen estos resultados sobre la importancia de tu voto en una elección tan cerrada?  (5 pts.)
+
+Ejercicio 2 
+
+Usa la función rnorm() para generar 1,000 valores aleatorios con $\mu$ = 100 y $\sigma$ = 20, y asigna los valores estimados a un objecto llamado aleatorio. A continuación, realiza los siguientes pasos y contesta a las preguntas.
+
+Presenta un histograma de densidad obtenido con los valores del objeto aleatorio y contesta ¿a qué distribución se asemeja el gráfico obtenido? (15 pts.)
+
+¿Es sorpresiva la forma del histograma? ¿Por qué? (5 pts.)
+
+Ejercicio 3
+
+Para este ejercicio tienes que descargar el archivo lab2.csv que se encuentra en la carpeta Files del repositorio de nuestra clase en Github.  La variable que vamos a utilizar es age. 
+
+Calcula la media de age. (10 pts.)
+
+Encuentra el error estándar de la variable age. (10 pts.)
+
+Calcula el intervalo de confianza para la variable age asumiendo un 95% de confianza.  (10 pts.)
+
+Interpreta el resultado del inciso anterior (i.e. ¿qué quiere decir?).  (5 pts.)
+
+Ejercicio 4
+
+Las hipótesis nulas y alternativa para determinar si la media muestral es igual a la media poblacional  obtenidas en el ejercicio 3 son iguales (o no) son las siguientes.
+
+$H_0: \bar{x} = \mu$
+
+$H_1: \bar{x} \neq \mu$
+
+¿Cuál es el p-value cuando $\bar{x} = 60$? (15 pts.) 
+
+El resultado anterior, ¿confirma la hipótesis nula o la hipótesis alternativa? ¿por qué) (10 pts.)
