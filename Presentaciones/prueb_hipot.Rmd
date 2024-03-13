@@ -1,0 +1,338 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex # use xelatex here instead! I recommend it, but this is minimal reprex
+    dev: cairo_pdf # I typically comment this out  if latex_engine: pdflatex
+    slide_level: 3 # I prefer this, but I won't force it on you.
+    theme: metropolis
+title: Pruebas de Hipótesis 
+subtitle: Marzo 13, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=F,
+                      fig.path = 'figs/',
+                      cache.path='cache/',
+                      warning=F,
+                      message=F,
+                      fig.width = 14, fig.height = 8.5,
+                      echo=F)
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+```{r opts, cache=FALSE, eval=TRUE, echo=FALSE}
+library(tidyverse)
+library(stevemisc)
+library(dqrng)
+library(BSDA)
+library(pander)
+```
+
+# Introducción
+### Objetivos 
+
+1. Introducción al paquete `t.test` 
+2. Introducir a los estudiantes a las pruebas de hipótesis con más de una muestra
+
+# Funciones en `R` que simplifican la vida
+## Función `qt()` para calcular el valor de *t*
+
+`qt()` calcula el valor de *t* para un determinado intervalo de confianza y grados de libertad de la siguiente forma:
+
+- *t = qt(p = confianza del intervalo + (1-confianza intervalo)/2, df= , lower.tail = TRUE)*
+
+```{r, eval=T, echo=T}
+qt(p = 0.95 + 0.05/2, df = 15, lower.tail = TRUE)
+```
+
+## Función `t.test()`
+### Función `t.test()`
+
+
+Para ver la aplicación vamos a usar la base de datos llamada `sleep` (del paquete `datasets`)
+
+`sleep` es una data frame que contiene 20 observaciones sobre 2 variables:
+
+- **extra:** incremento numérico en horas de sueño.
+- **group:** grupo del paciente.
+
+### Función `t.test()` 
+
+Preparamos los datos:
+
+```{r, eval=T, echo=T}
+## llamamos la base de datos 
+sleep <- sleep
+
+## calculamos la media de "extra"
+mean(sleep$extra)
+```
+
+### Función `t.test()`
+
+
+Antes de usar la función `t.test` calculemos paso a paso el valor de *t* en `R`.
+
+```{r, eval=T, echo=T}
+mediaExtra <- mean(sleep$extra)
+sdExtra <- sd(sleep$extra) # Desviación estándar de extra
+seExtra <- sdExtra/(sqrt(20)) # Error estándar de extra
+```
+
+```{r, eval=T, echo=T}
+valor_t <- (mediaExtra - 3)/seExtra    ## fórmula para calcular t
+valor_t
+```
+
+### Función `t.test()` 
+
+Ahora calculamos el p-value :
+
+```{r, eval=T, echo=T}
+2 * (1 - pt(abs(valor_t), df = 20 - 1))
+```
+
+El valor calculado es menor a p = .05.  Por lo tanto aceptamos la hipothesis alternativa $H_a$. 
+
+### Función `t.test()`
+
+`t.test` es una función que calcula una *prueba-t* en vectores de datos que pueden ser de una o dos muestras. Todo el procedimiento que hicimos en las 2 diapositivas anteriores lo podemos reducir a una línea de código. 
+
+### Función `t.test()`
+
+```{r, eval = T, echo = T}
+
+t.test(sleep$extra, mu = 3)
+```
+
+## Función `z.test`()
+### Función `z.test`()
+
+Para calcular el valor de *z* podemos utilizar la función `z.test` del paquete `BSDA`
+
+```{r, eval = T, echo = T}
+library(BSDA) ## carga el paquete
+data <- c(26, 25, 10, 34, 30, 23, 28, 29, 25, 27)  ## creo un vector de datos
+z_test <- z.test(data, mu = 24,sigma.x=10) ## función z.test
+```
+
+### Función `z.test`()
+
+```{r, eval = T, echo = T}
+print(z_test) ## imprimo resultados
+```
+
+# Pruebas de Hipótesis para 2 Muestras Independientes
+## Pruebas de Hipótesis para 2 Muestras Independientes
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+Hasta el momento todas las pruebas de hipótesis que hemos realizado han sido para una sola muestra (i.e. estamos comparando $\mu$ con $\bar{x}$). 
+
+<br/> 
+
+En ocasiones, sin embargo, nos puede interesar investigar si las medias de dos muestras **independientes** son significativamente diferentes la una de la otra.  
+
+<br/>
+
+¿Qué podemos hacer al respecto? 
+
+- Si las observaciones en las muestras independientes se distribuyen normalmente, podemos calcular una *prueba-t* de *independencia*
+
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+Si asumimos que la medida poblacional *x* esta normalmente distribuida con media $\mu$~x~ y varianza $\sigma_x^2$, que la media poblacional de *y* se distrubuye normalmente con media $\mu$~y~ y varianza $\sigma_y^2$, la fórmula para calcular el valor *t* es:
+
+\begin{equation}
+t = \frac{\bar{x} = \bar{y}}{e.s.(\bar{x} - \bar{y})}
+\end{equation}
+
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+donde,
+
+\begin{equation}
+e.s.(\bar{x} - \bar{y}) = \frac{\sigma_x}{\sqrt{n_x}} + \frac{\sigma_y}{\sqrt{n_y}}
+\end{equation}
+
+
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+**Ejemplo:** La siguiente tabla muestra estadísticas descriptivas de duración de gobiernos por tipo de gobierno (i.e. moyoritario o minoritario). 
+
+| Tipo de Gobierno | # Observaciones | Media de Duración | D. E. |
+| :---------------: | :-------------:| :--------------: | :------:|
+| Mayoritario | 124 | 930.5 | 466.1 |
+| Minoritario | 53 | 674.4 | 421.4 |
+| Combinados | 177 | 853.8 | 467.1 |
+
+**Pregunta:** ¿Hay diferencia significativa en la duración de gobiernos mayoritarios y minoritarios? 
+
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+Información de la tabla anterior
+```{r, eval = T, echo = T}
+may_bar <- 930.5 ## media gob. mayoritario
+min_bar <- 674.4 ## media gob. minoritario
+ds_may <- 466.1 ## desviacion estándar moyorit.
+ds_min <- 421.4
+n_may <- 124
+n_min <- 53
+```
+
+### Pruebas de Hipótesis para 2 Muestras Independientes
+
+Calculamos el error estándar de (X - Y):
+```{r, eval = T, echo = T}
+es_may_min <- sqrt((ds_may^2/n_may) + (ds_min^2/n_min)) ## ver fórmula 2
+es_may_min
+```
+
+Ahora calculamos el valor de *t*:
+```{r, eval = T, echo = T}
+t_calc <- (may_bar - min_bar)/es_may_min ## ver fórmula 1
+t_calc
+```
+
+Para calcular grados de libertad usamos las observaciones de la muestra más pequena (g.l. en este caso = 52)
+
+### Pruebas de Hipótesis para 2 Muestras Independientes 
+
+El valor de *t* para una *p* = .05 es **1.676**
+
+```{r, eval = T, echo = T}
+qt(p = 0.95, df = 52, lower.tail = TRUE)
+```
+
+```{r, eval = T, echo = T}
+2*pt(-abs(t_calc), df = 52) # p dos colas
+```
+
+## Otro ejemplo
+### Regresamos al Estudio del Sueño
+
+Vamos a asumir que el tiempo extra de sueño de cada individuo cuando usa la medicina se distribuye normalmente. Entonces, lo que nos interesa saber es si la diferencia en las horas promedio de sueño para cada medicina, esto es $\mu_1$ y $\mu_2$, es diferente de cero. En otras palabras, ¿Es una medicina mejor que la otra para incrementar el tiempo promedio de sueño?
+
+<br/> 
+
+Formalmente:
+
+<br/> 
+
+- $H_0:$ $\mu_1$ - $\mu_2$ = 0
+- $H_a:$ $\mu_1$ - $\mu_2$ $\neq$ 0
+
+
+### Regresamos al Estudio del Sueño
+
+```{r plot, echo=F, eval=T, fig.width=14, fig.height=8.5}
+stripchart(extra ~ group, data=sleep, pch=16, col=c("skyblue","firebrick"), 
+           vertical = TRUE, xlim=c(0.5,2.5), xlab="Soporific Drug No.", 
+           ylab="Horas Extra de Sueño", main="Efectividad de 2 Medicinas Diferentes para Incrementar Horas de Sueño")
+abline(h=0, lty=2, col="gray")
+legend("topleft", bty="n", pch=3, col=c("skyblue","firebrick"), title="", legend=c("Med. 1", "Med. 2"))
+```
+
+### Regresamos al Estudio del Sueño
+
+```{r, eval = T, echo = T}
+pander(t.test(extra ~ group, data = sleep, mu = 0, 
+              alternative = "two.sided", 
+              conf.level = 0.95), 
+              caption="Prueba t para muestras independientes",
+              split.table=Inf)
+```
+
+### Regresamos al Estudio del Sueño
+
+¿Cuál es nuestra conclusión si *p*  estimado es < .05?
+
+# Pruebas de Hipótesis para 2 Muestras NO Independientes
+## Pruebas de Hipótesis para 2 Muestras NO Independientes
+### Pruebas de Hipótesis para 2 Muestras NO Independientes
+
+Ahora asumamos que las muestras No son independientes.  Comparamos datos para la misma población en diferentes puntos en el tiempo. Por ejemplo, tus calificaciones en los examenes 1 y 2 del semestre. 
+
+<br/>
+
+**Ejemplo:** El Profe quiere saber si hay diferencias en el aprovechamiento de los estudiantes entre el exámen 1 y el exámen 2. 
+
+### Pruebas de Hipótesis para Muestras NO Independientes
+
+```{r, eval = T, echo = T}
+estudiante <- c("es1", "es2", "es3", "es4", "es5", "es6", "es7", "es8", "es9", "es10")
+examen1 <- c(99, 98, 67, 68, 70, 71, 72, 88, 75, 83)
+examen2 <- c(94, 93, 62, 63, 65, 66, 67, 83, 70, 76) 
+examen <- data.frame(estudiante, examen1, examen2)
+examen
+```
+
+## Función `var.test()`
+### Función `var.test()`
+
+Primero checamos si la varianza entre los dos grupos es diferente o no. 
+
+```{r, eval = T, echo = T}
+pander(var.test(examen$examen1, examen$examen2),
+       caption = "Prueba F de Varianza")
+```
+
+### Función `var.test()`
+
+El valor de *p* > $\alpha$ = .05.  Por lo tanto ACEPTAMOS $H_0$. Es decir, la diferencia entre las varianzas de 1 y 2 es 0 con el 95% de confiabilidad. 
+
+## Función `t.test()` Muestras NO Independientes
+### Función `t.test()` Muestras NO Independientes
+
+Las hipótesis en este caso son:
+
+- $H_0:$ No hay diferencia en las calificaciones de los estudiantes entre los exámenes 1 y 2.
+- $H_a:$ Hay diferencia en las calificaciones de los estudiantes entre los exámenes 1 y 2. 
+
+### Función `t.test()` Muestras NO Independientes
+
+```{r, eval = T, echo = T}
+t.test(examen$examen1, examen$examen2, 
+              paired = TRUE, 
+              var.equal = TRUE)
+```
+
+### Función `t.test()` Muestras NO Independientes
+
+La conclusión es que hay diferencias significativas en la calificaciones de los estudiantes en los exámenes 1 y 2. 
+
+¿Por qué? 
+
+
+# Conclusión
+## Conclusión 
+### Conclusión 
+
+- Estamos listos para el primer exámen del semestre. 
