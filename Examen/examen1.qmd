@@ -1,0 +1,93 @@
+---
+title: "Examen #1"
+subtitle: "Métodos Cuantitativos Aplicados, CIDE A.C."
+format: pdf
+editor: visual
+---
+
+Instrucciones 
+
+El examen tiene cuatro secciones. La primera consta de cinco preguntas sobre algunos conceptos básicos que hemos estudiado en clase.  En general, no debes necesitar más de tres o cuatro oraciones para contesarlas. La segunda parte tiene de dos problemas de probablidad y la tercera dos preguntas de inferencia estadística. La última sección contiene un ejercicio de extra-crédito. Tienes dos horas para contestar este examen.  Te recomiendo leer las preguntas con cuidado y tratar de no dejar respuestas en blanco. Si no tienes la respuesta final, siempre es mejor mostrar el procedimiento que tu crees que te llevaría a dicha respuesta. 
+
+Al terminar, deberás enviar el archivo con tus respuestas a mi dirección de correo electrónico (sergio.bejar@cide.edu). ¡Buena suerte!
+
+Parte 1: Respuestas Rápidas (15 puntos). 
+
+¿Qué significa el p-value? (3 pts.)
+
+¿Qué es el error de muestreo aleatorio? (3 pts.)
+
+¿Por qué es importante hacer un muestreo aleatorio de calidad? (3 pts.)
+
+¿Qué es la inferencia estadística? (3 pts.)
+
+Describe la importancia de incrementar el tamaño de una muestra (n).  (3 pts.)
+
+Parte 2: Probabilidad (30 puntos)
+
+Una bolsa contiene bolas numeradas del 1 al 20, de manera que todas tienen la misma probabilidad de ser escogidas. (15 puntos). 
+
+a) ¿Cuál es la probabilidad de que al sacar una bola, el número sea divisible por 3? (7.5 pts.)
+
+b) ¿Cuál es la probabilidad de que sea divisible por 3 o por 5? (7.5 pts.)
+
+Científicos en España han diseñado una prueba para detectar la presencia de la misteriosa enfermedad cerebralitis. Entre los que tienen la enfermedad, la probabilidad de que esta sea detectada por la prueba es del 86%. Sin embargo, la probabilidad de que la prueba indique erroneamente la presencia de la enfermedad en quienes no la tienen es del 8%. Se estima que el 16% de la población que se haga la prueba tiene la enfermedad. Si la prueba administrada a un individuo es positiva, ¿Cuál es la probabilidad de que esa persona en realidad tenga la enfermedad? (15 puntos). 
+
+Parte 3: Inferencia Estadística (55 puntos)
+
+El 5 y 6 de octubre del 2023, la revista Newsweek organizó una encuesta que incluyó una muestra aleatoria de 1004 personas. Los individuos en la muestra contestaron la siguiente pregunta para medir cómo evalúan el trabajo del President Biden:
+
+     ¿Usted aprueba o desaprueba la forma en la que el Presidente Biden está haciendo su trabajo como    presidente?
+
+En octobre del 2023, 33% de la muestra aprobaba el trabajo del Presidente Biden y el 67% desaprobaba su labor.  Nótese que la variable aleatoria x puede tomar valores de 1 (si el individuo aprueba) y 0 (si el individuo desaprueba).  
+
+   a) Calcula la media de x (i.e. $\bar{x}$ =  $\frac{1}{n}\sum_{x's} n_x*x$).  (5 pts.)
+
+   b) Calcula la desviación estándar de x en la muestra ( esto es, $s^2$ = $\sqrt{\frac{1}{n-1}}$ * $\sqrt{\sum_{x=1}^n(x_i - \bar{x})^2}$.  (5 pts.) 
+
+   c) Calcula el intervalo de confianza para la variable x con un 95% de confiabilidad. (5 pts.)
+
+   d) Interpreta los resultados del intervalo de confianza que obtuviste en el inciso (c).  (5 pts.)
+
+En esta pregunta utilizaremos la base de datos births que viene el el paquete openintro. Dicha base contiene información sobre 150 nacimientos junto con información sobre las madres (la base la puedes cargar usando el código mostrado abajo).  Nos interesa saber si hay diferencias significativas en el peso de los bebés cuyas madres fuman (f) versus el peso de los bebés cuyas madres no fuman. (NOTAS: (i) Para que el código funcione primero debes instalar el paquete openintro; (ii) lo columna weight tiene los datos sobre el peso del bebé; y (iii) la columna smoke tiene los datos de si la madre es fumadora (f) o no.)
+
+```{r}
+library(openintro)
+library(tidyverse)
+data(births)
+head(births, 2)
+```
+
+a) Establece las hipótesis nula y alternativa. (5 pts.)
+
+b) Calcula la diferencia entre las medias muestrales del peso (weight) de los bebés de madres fumadoras (f) y el peso de los bebés de madres no fumadoras (nf).  (10 pts.)
+
+c) Calcula el valor de p. (5 pts.)
+
+d) Obtén el intervalo de confianza.  (5 pts.)
+
+e) ¿Existe evidencia estadística a favor de la hipótesis nula? ¿Por qué? (10 pts.)
+
+Parte 4: Extra-Crédito (10 puntos)
+
+El uso de termómetros para evaluar figuras políticas es muy común en estudios de opinión. En ese termómetro, valores más altos indican que los individuos tienen una opinión más favorable sobre la figura política. Y para asegurarnos que los datos son número enteros que se encuentran contenidos en el intervalo [0, 100] usamos la distribución beta (que es una aproximación a la normal).  El código mostrado a continuación simula una muestra de 250,000 individuos con una $\mu$ = 40.015 y $\sigma$ = 40.24. 
+
+{r}
+# library(tidyverse)
+# library(stevemisc)
+
+# Poblacion <- rbnorm(250000, mean = 40.01578, sd = 40.24403,
+#                      lowerbound = 0, 
+#                      upperbound = 100,
+#                      round = TRUE,
+#                      seed = 8675309)
+# 
+# Poblacion %>% as_tibble() %>%. ## pueden usar tibble or data.frame
+#   mutate(uid = 1:n()) %>%
+#   rename(term = value) %>%
+#   select(uid, term) -> Poblacion
+````
+
+a) Simula 100,000 muestras aleatorias de 10 individuos cada una. ¿Cuál es la media de todas las medias muestrales? ¿Esta cerca de $\mu$?
+
+b) ¿Qué explica el resultado del inciso (a)? 
