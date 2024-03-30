@@ -1,0 +1,489 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex 
+    dev: cairo_pdf 
+    slide_level: 3 
+    theme: metropolis
+title: Correlación y Regresión Lineal 
+subtitle: Abril 1 y 3, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE, warning=F, message=F)
+knitr::opts_chunk$set(fig.path='figs/',  fig.width=14, fig.height=8.5)
+knitr::opts_chunk$set(cache.path='cache/')
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+```{r opts, cache=FALSE, eval=TRUE, echo=FALSE}
+
+library(tidyverse)
+library(stevemisc)
+
+```
+
+# Introducción
+### Objetivos Para Hoy 
+
+*Usar correlación y regresión lineal para describir la relación entre dos variables.*  
+
+### Lo Que Hemos Construido
+
+Todo lo que hemos estudiado hasta el momento nos sirve para construir una investigación cuantitativa "normal".
+
+- Observamos la tendencia central y variación en nuestras variables. 
+- Hacemos inferencias sobre nuestras afirmaciones (i.e. hipótesis) de causa y efecto usando la lógica del muestreo aleatorio. 
+
+Si nuestro estadístico muestral es más que 1.96 errores estándar del parámetro poblacional, entonces tenemos mucha confianza (95%) rechazando el parámetro poblacional propuesto. 
+
+
+### El Plan Para Hoy
+
+Estudiaremos los siguientes temas.
+
+1. **Análisis Correlacional.**
+2. **Análisis de Regresión.**
+
+### Paquetes de `R` Que Usaremos
+
+```r
+library(tidyverse) # para todo lo relacionado con nuestro workflow
+library(stevemisc) # para formatear algunas cosas
+```
+
+### Base de Datos que Usaremos
+
+La base de datos que usaremos esta disponible en la página Github de la clase.  Se llama `election.turnout.csv` y contiene datos sobre el porcentaje de votantes que participaron (i.e. turnout) en la elección presidencial de Estados Unidos en 2016. 
+
+```{r, include = FALSE}
+## cargamos datos
+datos <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/election_turnout.csv") 
+
+## puedes ver los datos usando
+head(datos, 2)
+```
+
+
+# Correlación
+### Correlación
+
+*Pregunta*: ¿El porcentaje de votantes a nivel estatal varia como consecuencia del nivel de educación estatal?
+
+- Education: % de personas en el estado con preparatoria. (Datos estimados para 2015)
+- Turnout: % de participación ciudadana en elección presidencial del 2016. 
+
+Podemos hacer una conclusion preliminar usando un **scatterplot**.
+
+- Pero primero vamos a ver un poco nuestros datos.
+
+### Analizamos Un Poco los Datos
+
+Estados menos educados en EEUU
+
+```{r}
+datos %>% select(state, perhsed) %>% 
+  top_n(-5, perhsed) %>% arrange(perhsed)
+```
+
+### Usando Otro Indicador de Educación...
+
+Moraleja: Hay que tener cuidado con el indicador de educación que usamos...
+```{r}
+datos %>% select(state, percoled) %>% 
+  top_n(-5, percoled) %>% arrange(percoled)
+```
+
+### Los Estados Más Educados
+
+```{r}
+datos %>% select(state, perhsed) %>% 
+  top_n(5, perhsed) %>% arrange(-perhsed)
+```
+
+### De Nuevo, Universidad (College) es Diferente...
+
+```{r}
+datos %>% select(state, percoled) %>% 
+  top_n(5, percoled) %>% arrange(-percoled)
+```
+
+### % de Participción (Turnout) en 2016...
+
+```{r}
+datos %>% select(state, turnoutho) %>% 
+  top_n(5, turnoutho) %>% arrange(-turnoutho)
+```
+
+### Los Estados con Menor Participación (Turnout)
+
+```{r}
+datos %>% select(state, turnoutho) %>% 
+  top_n(-5, turnoutho) %>% arrange(turnoutho)
+```
+
+###
+
+```{r scatter1, echo=F, eval=T, warning=F}
+
+ggplot(datos, aes(perhsed, turnoutho)) + 
+  geom_point(size=I(2)) + theme_steve_web() +
+  xlim(80,95) +
+  scale_y_continuous(breaks = c(40,45,50,55,60,65,70,75), limits=c(40,75)) +
+  labs(title = "Scatterplot de Nivel de Educación Estatal y Turnout en la Elección de 2016",
+       subtitle = "Los datos están dispersos consistente y positivamente. Hawaii es un claro outlier.",
+       x = "% de Residentes de 25 años o más con al menos diploma de Prepa",
+       y = "% Participación (Turnout) en Elección Presidencial",
+       caption = "Datos: Elections Project, U.S. Census Bureau")
+
+```
+
+### Correlación
+
+La relación entre educación y turnout es identificable facilmente: es positiva.
+
+- La relación no es perfecta, pero se ve bastante "fuerte".
+
+¿Qué tan fuerte? El **coeficiente de correlación lineal de Pearson (r)** nos lo dirá.
+
+### Coeficiente de Correlación lineal de Pearson, *r*
+
+$$
+    \Sigma\frac{(\frac{x_i - \overline{x}}{s_x})(\frac{y_i - \overline{y}}{s_y})}{n - 1}
+$$
+
+...donde:
+
+- $x_i$, $y_i$ = observaciones individuales de *x* o *y*, respectivamente.
+- $\overline{x}$, $\overline{y}$ = medias muestrales de *x* y *y*, respectivamente.
+- $s_x$, $s_y$ = desviación estándar muestral de *x* y *y*, respectivamente.
+- *n* = número de observaciones en la muestra.
+
+### Propiedades de la *r* de Pearson
+
+1. Es simétrica.
+2. Está contenida entre -1 y 1.
+3. Es estandarizada.
+
+###
+
+```{r scatterz, echo=F, eval=T, warning=F, error=F, message=F}
+datos %>%
+  mutate(z_perhsed = (perhsed - mean(perhsed))/sd(perhsed),
+         z_turnoutho = (turnoutho - mean(turnoutho))/sd(turnoutho)) %>%
+  ggplot(.,aes(z_perhsed, z_turnoutho)) +
+  geom_point(size=I(2)) + theme_steve_web() +
+  # xlim(-2.2,2) + ylim(-3.3,3.3) +
+  geom_vline(xintercept=0, linetype="dashed") +
+  geom_hline(yintercept=0, linetype="dashed") +
+  scale_y_continuous(breaks = c(-3,-2,-1,0,1,2,3), limits=c(-3.1,3)) +
+  geom_text(aes(label=ifelse(z_perhsed > 0 & z_turnoutho < 0 ,as.character(state),'')),hjust=-.5,vjust=0) +
+  geom_text(aes(label=ifelse(z_perhsed < 0 & z_turnoutho > 0 ,as.character(state),'')),hjust=-.5,vjust=0) +
+  labs(title = "Scatterplot de Nivel de Educación Estatal y Turnout en la Elección Presidencial del 2016",
+       subtitle = "Observaciones en los cuadrantes de correlación negativos indicados con nombre.",
+       x = "% Residentes de 25 años o más con al menos diploma de Preparatoria",
+       y = "% Turnout en Elección Presidencial",
+       caption = "Datos: Elections Project, U.S. Census Bureau.")
+
+```
+
+
+### Educación y Turnout (Z Scores)
+
+- Casos en cuadrante superior-derecho están por encima de medias de *x* y *y*.
+- Casos en cuadrante inferior-izquierdo están por debajo de la media de *x* y *y*.
+- Cuandrante superior-izquierdo e inferior-derecho son cuadrantes de correlación negativa.
+
+Dicho esto, el coeficiente de correlación lineal *r* es 26.41369/50, o .52.
+
+- Podemos decir informalmente que hay una relación positiva fuerte entre las dos variables. 
+
+### ...Calculando en `R`
+
+\scriptsize
+```{r orinr}
+
+datos %>%
+  mutate(z_perhsed = (perhsed - mean(perhsed))/sd(perhsed),
+         z_turnoutho = (turnoutho - mean(turnoutho))/sd(turnoutho)) -> datos
+
+with(datos, sum(z_perhsed*z_turnoutho)/(length(state)-1))
+
+with(datos, cor(perhsed,turnoutho))
+
+```
+\normalsize
+
+### Nuestro Outlier, Hawaii...
+
+```{r hawaii}
+
+datos %>%
+  filter(state != "Hawaii") %>%
+  summarize(cor = cor(perhsed, turnoutho))
+
+
+```
+
+
+# Regresión Lineal
+## Demistificando la Regresión
+### Regresión Lineal
+
+El coeficiente de correlación tiene algunas características interesantes.
+
+- Es otra herramienta analítica que puede ser usada como "primer paso".
+- Útil para detectar **multicolinearidad**.
+    - Esto es cuando dos variables independientes están muy correlacionadas y es difícil detectar el efecto parcial de cada una (lo veremos más adelante). 
+    
+Pero es neutral en lo que es *x* y lo que es *y*.
+
+- Es decir, no nos dice nada sobre la causa-efecto.
+
+La regresión nos ayuda con eso.
+
+### Demistificando la Regresión
+
+¿Les parece familiar?
+
+$$
+y = mx + b
+$$
+
+### Demistificando la Regresión
+
+Es la ecuación de una línea recta con pendiente e intercepto.
+
+- *b* es el intercepto: el valor observado de *y* cuando *x* = 0.
+- *m* es la pendiente, mide el cambio que hay *y* por cada cambio unitario en *x*.
+
+### Demistificando la Regresión
+
+La ecuación pendiente-intercepto es, en esencia, la representación de una regresión lineal.
+
+- Los estadísticos o econometristas statisticians preferieren la siguiente notación
+
+$$
+y = a + b(x)
+$$
+
+La *b* es el **coeficiente de regresión** que indica el cambio en *y* por cada cambio de unidad en *x*.
+
+## Un Ejemplo Simple
+### Un Ejemplo Simple
+
+Supongamos que quiero explicar tu calificación en un examen (*y*) usando el número de horas que estudiaste para dicho examen (*x*).
+
+| *Horas (x)* | *Calificación (y)* |
+|:------------|:-----------:|
+| 0 | 55 |
+| 1 | 61 |
+| 2 | 67 |
+| 3 | 73 |
+| 4 | 79 | 
+| 5 | 85 | 
+| 6 | 91 |
+| 7 | 97 |
+
+Tabla: Horas de estudio y calificación en examen. 
+
+### Un Ejemplo Simple
+
+En esta clase, el estudiante que estudió 0 hours sacó 55.
+
+- El estudiante que estudió 1 hora obtuvo un 61.
+- Quien estudió 2 obtuvo un  67.
+- ...y así sucesivamente...
+
+Cada hora de estudio adicional produce un cambio de seis unidades en la calificación. Lo podemos denotar así:
+
+$$
+y = a + b(x) = \textrm{Calificación} = 55 + 6(x)
+$$
+
+Nótese que el intercepto de  *y* es en 55.
+
+### Un Ejemplo Menos Simple
+
+En realidad los datos nunca son tan simples. Compliquemos un poco...
+
+\footnotesize
+
+| *Horas (x)* | *Calificación (y)* | *Calificación Estimada ($\hat{y}$)* |
+|:------------|:-----------:|:---------------------:|
+| 0 | 53 | 55 |
+| 0 | 57 | |
+| 1 | 59 | 61 |
+| 1 | 63 | |
+| 2 | 65 | 67 |
+| 2 | 69 | |
+| 3 | 71 | 73 |
+| 3 | 75 | |
+| 4 | 77 | 79 |
+| 4 | 81 | |
+| 5 | 83 | 85 |
+| 5 | 87 | |
+| 6 | 89 | 91 |
+| 6 | 93 | |
+| 7 | 95 | 97 |
+| 7 | 99 | |
+
+Tabla: Horas Estudiando, Calificación, y Calificación Estimada
+
+### Un Ejemplo Menos Simple
+
+Complicando un poco los datos no cambia la linea de regresión.
+
+- Notemos que la regresión promedia sobre diferencias. 
+- Una hora de estudio adicional, *en promedio*, corresponde a un incremento de seis unidades en la calificación.
+- Hemos visto nuestras observaciones (*y*) y nuestros estimados ($\hat{y}$, o *y*-gorro).
+
+## Obtención del Coeficiente de Regresión
+### Nuestra Línea de Regresión
+
+La línea de regresión es:
+
+$$
+\hat{y} = \hat{a} + \hat{b}(x) + e
+$$
+
+...donde:
+
+- $\hat{y}$, $\hat{a}$ y $\hat{b}$ son estimados de *y*, *a*, y *b* sobre los datos.
+- *e* es el error.
+	- El error contiene: error de muestreo aleatorio, y el error de predicción.
+
+### Obtención del Coeficiente de Regresión
+
+¿Cómo se obtiene el coeficiente de regresión en datos más complejos? 
+
+
+- Empezamos con el **error de predicción**, formalmente: $y_i - \hat{y}$.
+- Los elevamos al cuadrado. Esto es: $(y_i - \hat{y})^2$
+	- La suma de los errores al cuadrado es igual a cero.
+
+El coeficiente de regresión que resulta *minimiza* la suma de diferencias al cuadrado ($(y_i - \hat{y})^2$).
+
+- En otras palabras: regresión de "mínimos cuadrados ordinarios" (OLS - Ordinary Least Squares).
+
+El siguiente gráfico nos da una representación de esto usando el ejemplo de educación y turnout estatal. 
+
+### 
+
+```{r scatterline, echo=F, eval=T, warning=F}
+
+ggplot(datos, aes(perhsed, turnoutho)) + 
+  geom_point(size=I(2)) + theme_steve_web() +
+  xlim(80,95) +
+  scale_y_continuous(breaks = c(40,45,50,55,60,65,70,75), limits=c(40,75)) +
+  geom_smooth(method=lm, se=FALSE) +
+  labs(title = "Educación y Turnout en la Elección del 2016 (EEUU)",
+       x = "% de Residentes de 25 años o más con al menos diploma de Prepararoria",
+       y = "% de Participación (Turnout) en Elección Presidencial",
+       subtitle = "La línea que minimiza la suma de los errores al cuadrado se hace a través de esos puntos.")
+
+```
+
+### Error Estándar del Coeficiente de Regresión
+
+Cada parámetro (o variable) en el modelo de regresión viene con un error estándar. 
+- Que estima con que precisión el modelo estima el valor desconocido del coeficiente(s). 
+
+El procedimiento para estimar los errores estándar no es tan sencillo. 
+
+- Necesitamos la diagonal de raíces cuadradas de la matriz de varianza-covarianza. 
+- Y para ello requerimos álgebra matricial, que sale de nuestros objetivos en esta clase. 
+
+En `R` lo podemos obtener con facilidad.
+
+
+### Por Curiosidad...
+
+\footnotesize
+
+```{r basiclm}
+summary(M1 <- lm(turnoutho ~ perhsed, data=datos))
+```
+
+\normalsize
+
+### Por Curiosidad...
+
+\scriptsize
+
+```{r extractses}
+X <- model.matrix(M1) # Intercepto + perhsed
+
+# Suma de cuadrado residuales
+sigma2 <- sum((datos$turnoutho - fitted(M1))^2) / (nrow(X) - ncol(X))
+
+sqrt(sigma2) # error estándar residual
+sqrt(diag(solve(crossprod(X))) * sigma2) 
+```
+
+\normalsize
+
+### 
+
+```{r scatterlinese, echo=F, eval=T, warning=F}
+
+ggplot(datos, aes(perhsed, turnoutho)) + 
+  geom_point(size=I(2)) + theme_steve_web() +
+  xlim(80,95) +
+  scale_y_continuous(breaks = c(40,45,50,55,60,65,70,75), limits=c(40,75)) +
+  geom_smooth(method=lm, se=TRUE) +
+    labs(title = "Educación y Turnout en la Elección del 2016 (EEUU)",
+       x = "% de Residentes 25 años o más con al menos Diploma de Preparatoria",
+       y = "% Turnout en Elección Presidencial",
+       subtitle = "La línea que minimiza la la suma de los errores al cuadrado se hace a través de esos puntos.")
+
+```
+
+### Regresión: Educación y Turnout
+
+Esta sería nuestra línea de regresión:
+
+$$
+\hat{y} = -32.30 + 1.05(x)
+$$
+
+Interpretamos esto de la siguiente forma:
+
+- Para el estado en donde nadie se gradúa de preparatoria, el turnout será de -32.30%.
+	- *Un poco extraño el resultado, pero es porque no centramos las variables...*
+- Por cada incremento unitario en el porcentaje de personas que se gradúan de prepa, el turnout se incrementará en apoximadamente 1.05%. 
+
+
+# Conclusión
+## Conclusión
+
+- El coeficiente de correlación no ayuda a saber si existe relación entre dos variables. Pero hay otras herramientas para hacer una inferencia más adecuada.
+- Una de esas herramientas en la regresión lineal simple, a la que regresaremos la próxima semana. 
