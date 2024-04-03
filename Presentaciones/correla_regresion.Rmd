@@ -435,7 +435,25 @@ summary(M1 <- lm(turnoutho ~ perhsed, data=datos))
 
 \normalsize
 
-### Por Curiosidad...
+### Lo que Vemos con `summary`
+
+Lo más importante:
+
+- "Estimaciones": intercepto de y, y coeficientes de regresión.
+- Errores Estándar: un estimado de la variabilidad alrededor del coeficiente estimado.
+- Pruebas estadísticas (estadístico $t$, valor de $p$): los usaremos para hacer inferencias.
+- $R^2$s: mide que tan bien nuestro modelo se ajusta a los datos.
+
+Otros estadísticos (menos importantes):
+
+- Estadístico $F$: "significancia total" del modelo.
+- Error estándar residual: error estándar de los residuos.
+    - Usado para calcular los errores estándar junto a la matriz varianza-covarianza.
+- Distribución de los residuales: nos da un resúmen del rango de los residuales.
+
+
+
+### También en `R` pero con Fórmulas
 
 \scriptsize
 
@@ -480,6 +498,60 @@ Interpretamos esto de la siguiente forma:
 - Para el estado en donde nadie se gradúa de preparatoria, el turnout será de -32.30%.
 	- *Un poco extraño el resultado, pero es porque no centramos las variables...*
 - Por cada incremento unitario en el porcentaje de personas que se gradúan de prepa, el turnout se incrementará en apoximadamente 1.05%. 
+
+## Inferencia en Regresión
+### Inferencia en Regresión
+
+¿Qué podemos decir sobre *b*-gorro ($\hat{b}$ = 1.05?)
+
+- Si usamos una muestra diferente, ¿observaríamos algo muy diferente?
+- ¿Cómo lo podemos saber?
+
+### Inferencia en Regresión
+
+Esto lo hemos visto antes. ¿Se acuerdan de los valores *Z*?
+
+$$
+Z = \frac{\overline{x} - \mu}{s.e.}
+$$
+
+### Inferencia en Regresión
+
+Hacemos lo mismo, pero usando una distribución *t* Student.
+
+$$
+t = \frac{\hat{b} - \beta}{s.e.}
+$$
+
+$\hat{b}$ es el coeficiente de regresión. ¿Qué es $\beta$?
+
+### Inferencia en Regresión
+
+$\beta$ es **cero**.
+
+- Estamos probando si el coeficiente de regresión es un artefacto del proceso de muestreo. 
+- Estamos probando que hay (o no) relación entre *x* y *y*.
+
+### Inferencia en Regresión
+
+Esto simplifica las cosas.
+
+$$
+t = \frac{\hat{b}}{s.e.}
+$$
+
+### Inferencia en Regresión
+
+En el ejemplo de educación y turnout, es lo siguiente.
+
+$$
+t = \frac{1.05}{.24} = 4.35
+$$
+
+El coeficiente de regresión está a más de cuatro errores estándar de cero.
+
+- La probabilidad de observarlo si $\beta$ fuera realmente cero es de .000067.
+- Por lo tanto, inferimos que nuestro coeficiente es estadísticamente signiificativo con 95% de confianza.
 
 
 # Conclusión
