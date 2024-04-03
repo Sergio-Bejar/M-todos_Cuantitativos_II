@@ -18,4 +18,4 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Marzo 13| Pruebas de hipótesis 2 |[Presentación 5](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/pruebas_hipotesis.pdf)||||
 |Marzo 20| Examen 1 |[Respuestas](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen1_solucion.pdf)||||
 |Abril 1| Correlación | [Presentación 6](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/corr_reg_update.pdf) | |||
-|Abril 3| Intro Regresión Lineal Simple | [Presentación](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/corr_reg_update.pdf) | |||
+|Abril 3| Intro Regresión Lineal Simple | [Presentación 6](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/corr_reg_update.pdf) | |||
