@@ -1,0 +1,354 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex 
+    dev: cairo_pdf 
+    slide_level: 3 
+    theme: metropolis
+title: Diagnósticos Regresión Lineal 
+subtitle: Abril 10, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE, warning=F, message=F)
+knitr::opts_chunk$set(fig.path='figs/',  fig.width=14, fig.height=5.5)
+knitr::opts_chunk$set(cache.path='cache/')
+knitr::opts_chunk$set(cache.path='cache/',
+                      collapse = TRUE, comment = "#>")
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+```{r loaddata, echo=F, eval=T, message=F, warning=F}
+
+library(tidyverse)
+library(stevemisc)
+library(stevethemes)
+library(stevedata)
+library(stargazer)
+library(modelsummary)
+library(kableExtra)
+library(lmtest)
+library(patchwork)
+library(sandwich)
+
+
+options("modelsummary_format_numeric_latex" = "plain")
+options(knitr.kable.NA = '')
+
+set.seed(8675309)
+```
+
+
+# Introducción
+### Objetivo(s) para Hoy
+
+1. Entender los supuestos de la regresión lineal simple (OLS).
+2. Familiarizarnos con las pruebas básicas de diagnóstico que debemos hacer en "todos" los modelos OLS.
+3. Entender que debemos hacer cuando nos falle alguna prueba de diagnóstico.
+
+### Supuestos de OLS
+
+OLS tiene muchos supuestos.
+
+Es complejo determinar cuáles supuestos son los más importantes. 
+
+- Punto de vista maximalista: cualquier violación a los supuestos es suficiente para rechazar el modelo.
+- Pero: la violación de algunos supuestos tiene ciertas *implicaciones* importantes.
+
+# Los Supuestos de OLS 
+### LINI
+
+Pensemos en la siguinete abreviación de los supuestos de OLS:  LINI
+
+- `L`: la variable dependiente *y* es una función *l*ineal de las variables independientes y de control.
+- `I`: los errores (residuales) son *i*ndependendientes (i.e. no hay autocorrelación).
+- `N`: la distribución de los errores es *n*ormal
+- `I`: la varianza de los errores is *i*gual/constante (i.e. no heteroskedasticidad).
+
+En realiad el orden no importa tanto.
+
+Y estos supuestos tampoco nos dicen nada sobre la validez de los datos o que tan representativa es la muestra. 
+
+
+## Una Advertencia Sobre Otros Supuestos
+### Primero, una Advertencia
+
+Los libros generalmehte mencionarán como problemas lo siguiente:
+
+1. Multicolinearidad
+2. Especificación ("toidas las variables relevantes")
+
+Mi advertencia: son importantes, pero constituyen un problema trivial.
+
+### Multicolinearidad
+
+**Multicolinearidad** existe cuando dos o más variables explicativas están altamente correlacionadas. Por lo tanto, nuestra regresión (OLS) no nos da efectos parciales confiables.
+
+
+- Colinearidad *Perfecta*: el modelo no se puede "identificar".
+- Alta colinearidad: tus errores estándar son MUY grandes.
+
+*Diagnóstico*: matriz de correlación, factor inflación-varianza
+
+- Matriz de correlación: valor absoluto por encima de .8 indica un problema.
+- Factor inflación-varianza: un valor arriba de 5 indica un problema.
+
+*Solución(es)*: 
+
+1. No inlcuir una de las variables.
+2. Análisis de componente principal (i.e. crear una medida latente)
+
+
+### Problemas de Especificación
+
+Los problemas de especificación de un modelo generalmente se presentan "incluyendo todas las variebles" que predicen *y*. Advertencia: 
+
+- No existe una prueba formal para esto. 
+
+Los problemas de especificación son críticos únicamente cuando hacemos ajustes en las variables de control. Veamos a los siguientes escenarios: 
+
+1. `X` y `Z` ambas explican variación en `Y`, pero `X` y `Z` no están correlacionadas.
+2. `X` y `Z` ambas explican variación en `Y`, y `X` y `Z` están correlacionadas.
+3. `X` (pero no `Z`) explican variación en `Y`, y `X` y `Z` están correlacionadas.
+
+### Escenarios de problemas de especificación
+
+Primer escenario: omitir `Z`no tiene influencia en el "verdadero" efecto de `X` en `Y`.
+
+- Omitir `Z` reducirá la $R^2$, lo que no significa un problema real para identificación causal.
+
+- *Nos tenemos que preguntar cuál es el objetivo de nuestro modelo*.
+
+Segundo escenario: omitir `Z` sesga la relación entre `X` y `Y`.
+
+- Incluir `Z` arregla esto, pero genera un problema de multicolinearidad.
+
+Tercer escenario: esto es conocido como el problema de la variable instrumental (un tema avanzado).
+
+## Linearidad
+### Linearidad
+
+OLS asume que *y* es una función lineal de variables que la predicen.
+
+- Esto implica que el modelo es *aditivo*.
+- Sin este supuesto el modelo deja de ser lineal.
+
+*Diagnóstico*: fundamentalmente visual (plot residuos ajustados). Pero también:
+
+- Prueba Utts (1982) del "Arcoiris"
+- Prueba Harvey-Collier
+- *Nota:. Ninguna de estas pruebas es muy buena; lo más recomendable es mirar a los datos/modelo*.
+
+*Soluciones:*
+
+- ¿Nuevo Modelo?
+- Transformación logarítmica
+    - e.g. si *y = abc*, entonces $log(y) = log(a) + log(b) + log(c)$
+- ¿Interacciones/elevar variables al cuadrado?
+
+### Regresamos al Ejemplo de Turnout y Educación
+
+```{r, include = TRUE}
+## cargamos datos
+datos <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/election_turnout.csv") 
+
+```
+
+### Estimamos el modelo (M1)
+
+\footnotesize
+
+```{r basiclm}
+summary(M1 <- lm(turnoutho ~ perhsed, data=datos))
+```
+
+\normalsize
+
+### Plot Valores Esperados vs. Residuales
+
+Para identificar problemas de linealidad podemos usar la siguiente función que grafica los valores esperados de *y* y los residuales. 
+
+```{r, include=TRUE}
+plot(M1, which = 1)
+```
+
+Si vemos una relación clara lineal entonces hay un problema de linealidad. 
+
+## Independencia (i.e. No Autocorrelación)
+### Errores Independientes (o: No Autocorrelación)
+
+Otro supuesto grande: OLS asume que los datos son obtenidos aleatoriamente de una población. Es decir, no hay patrones de dependencia espacial, temporal o multinivel. 
+
+- La inclusión de una observaión no debe tener efecto en la inclusión de otra observación. 
+- El valor residual de una observación no puede depender en los residuales de otras observaciones. 
+- Si esto ocurre, OLS pierde su valor inferencial. 
+
+*Diagnóstico*: Hay 3 situaciones comunes. 
+
+1. Series de tiempo (i.e. $y$ depende de valores pasados de $y$)
+2. Modelos "Multinivel"/Jerárquicos 
+3. Sesgo de variables omitidas
+
+*Soluciones*: Generalmente resolvemos este problema estimando un modelo muy diferente al que tenemos.  
+
+### Checando Independencia de Errores (Series de Tiempo)
+
+Usamos la función `dwtest` de la librería `lmtest` para checar aurocorrelación. 
+```{r, include=TRUE}
+dwtest(M1)
+```
+
+Un p-value por encima de 0.05 es consistente con la hipótesis nula de no autocorrelación.
+
+### Checando Independencia de Errores (Series de Tiempo)
+
+Otra prueba que podemos usar para detectar autocorrelación es la Breusch-Godfrey.
+
+Usamos la función `dwtest` de la librería `lmtest` para checar aurocorrelación. 
+```{r, include=TRUE}
+bgtest(M1)
+```
+
+Si el valor de *p* está por debajo de .05 entonces tenemos un problema. 
+
+### Soluciones Para Problemas de Autocorrelación
+
+- Incluir tendencia de tiempo ($t^2$, $t^3$, etc.).
+- Usar primeras diferencias. 
+- Usar efectos restardados (lagged effects).
+
+## Normalidad de Errores
+### Normalidad de Errores
+
+OLS asume que la distribución de residuales es normal con una media de 0 y cierta varianza. Advertencias:
+
+- Esto no significa que la variable dependiente es normal.
+- No dice nada sobre las variables independientes o de control. 
+- Las pruebas de diagnóstico no son muy buenas porque son muy sensibles al tipo de VD que tengamos. 
+- La implicación de esta violación es sobre los errores, no sobre la regresión en sí. 
+
+*Diagnósticos*: Q-Q plot, y otras pruebas de normalidad que no son muy buenas.
+
+\hspace{3pt}
+
+*Soluciones*: usar otro tipo de modelos (diferentes a OLS.. una opción es GLS). Generalmente este problema sucede cuando estamos forzando OLS en casos cuando tenemos una VD con un conjunto finito de valores. 
+
+### Evaluando Normalidad de Errores
+
+```{r}
+plot(M1, which = 2)
+```
+
+
+### Evaluando Normalidad de Errores
+
+También podemos usar las pruebas de Shapiro o Kolmogorov-Smirnoff, vía las funciones `shapiro.test()`. Un p-value menor a 0.05 rechaza la hipótesis nula de normalidad en la distribución de los residuos:
+
+```{r, include=TRUE}
+shapiro.test(resid(M1))
+```
+
+## Homoesquedasticidad
+### Homoesquedasticidad 
+
+OLS asume que la dispersión de los errores no depende en los valores esperados (homoesquedasticidad).
+
+- Si esto sucede, la línea de regresión está bien pero los errores estándar NO. 
+- Esto tiene consecuencias muy importantes para pruebas de significancia de nuestros coeficientes.  
+
+*Diagnósticos*: Plot de residuales esperados, prueba de Breusch-Pagan. 
+
+\hspace{3pt}
+
+*Solutions*: más "pruebas de robustes" comparando OLS con otros estimadores. 
+
+- e.g. transformación de VD/VI, mínimos cuadrados ponderados (WLS), bootstrapping. 
+
+### Evaluando Homoesquedasticidad
+
+```{r, include = TRUE}
+plot(M1, which = 3)
+```
+
+Buscamos que: (a) la línea roja sea aproximadamente horizontal y (b) la dispersión de los puntos no cambie mucho en funció de los valores esperados. 
+
+### Evaluando Homoesquedasticidad
+
+La prueba de Breusch-Pagan nos ayudará a determinar con más precisión si tenemos un problema de heteroesquedasticidad. 
+
+```{r, include = TRUE}
+bptest(M1)
+```
+
+La hipótesis nula en esta prueba es homoesquedasticidad. Si la rechazamos con un p-value bajo (menor a 0.05), tenemos heteroesquedasticidad.
+
+### Solucionando Heteroesquedasticidad
+
+En caso de tener heteroesquedasticidad podemos lidiar con este problema corrigiendo los errores estándar después de estimar el modelo y diagnosticarlo. Para ello, usamos la función `coeftest` del paquete `{sandwich}`. 
+
+```{r, include=TRUE}
+coeftest(M1, vcov = vcovHC)
+```
+
+Estos resultados son obtenidos con errores estándar robustos. Esta es una práctica muy común en ciencias políticas y relaciones internacionales. 
+
+
+### Solucionando Heteroesquedasticidad
+
+También podemos estimar una regresión de mínimos cuadrados ponderados (WLS) para minimizar el problema de heteroesquedasticidad.
+
+```{r, include=TRUE}
+# Calculamos el inverso de la varianza
+# queremos dar menos peso a observaciones con varianza alta 
+# y más pedo a obervaciones con varianza alta
+weights <- 1 / (datos$perhsed)^2
+
+# Fit WLS model
+m_wls <- lm(turnoutho ~ perhsed, weights = weights, data = datos)
+```
+
+### Solucionando Heteroesquedasticidad
+
+
+
+```{r, include=TRUE}
+summary(m_wls)
+```
+
+# Conclusión
+### Conclusión
+
+OLS tiene supuestos que debemos conocer.
+
+- Hay variación en la importancia de los supuestos de OLS.
+- Y esa variación en la importancia tiene efectos más o menos importantes en las inferencias que hacemos cuando usamos OLS.
+
+Independientemente, *siempre* debemos asegurarnos que nuestras estimaciones sean lo más robustas posibles. 
