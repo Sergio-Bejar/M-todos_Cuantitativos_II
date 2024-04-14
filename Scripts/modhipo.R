@@ -58,6 +58,21 @@ ggplot(wdi_polity, aes(x=loggdppc, y=polity2.r)) +
   geom_point() +
   geom_smooth(method=lm , color="red", se=TRUE)  # scatetter plot con tendencia lineal e I.C.
 
+# Hay demasiadas observaciones de cada variable para cada país
+# y el scatter plot se ve bastante desordenado
+# una forma alternativa de ver esto es agrupando por país 
+
+
+promedio <- wdi_polity %>% # simplemente estoy agrupando mis datos por país usando las medias d variables
+  drop_na() %>%
+  group_by(country.x) %>%
+  summarise(m_gdppc = mean(loggdppc), m_polity = mean(polity2.r))
+
+ggplot(promedio, aes(x = m_gdppc, y = m_polity)) +
+  geom_point() +
+  geom_smooth(method=lm , color="red", se=TRUE) + # scatetter plot con tendencia lineal e I.C.
+  geom_text(aes(label = country.x, hjust = - 0.1)) 
+
 #######################################
 #     Regresión Lineal Simple         #
 #######################################
