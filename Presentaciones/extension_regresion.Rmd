@@ -1,0 +1,219 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex 
+    dev: cairo_pdf 
+    slide_level: 3 
+    theme: metropolis
+title: Extensiones a OLS
+subtitle: Abril 17, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE, warning=F, message=F)
+knitr::opts_chunk$set(fig.path='figs/',  fig.width=14, fig.height=8.5)
+knitr::opts_chunk$set(cache.path='cache/')
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+
+```{r loaddata, echo=F, eval=T, message=F, warning=F}
+
+library(tidyverse)
+library(stevemisc)
+library(stevethemes)
+library(stevedata)
+library(stargazer)
+library(modelsummary)
+library(kableExtra)
+library(lmtest)
+library(patchwork)
+library(sandwich)
+
+
+options("modelsummary_format_numeric_latex" = "plain")
+options(knitr.kable.NA = '')
+
+set.seed(8675309)
+turnout_EU <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/election_turnout.csv") 
+turnout_EU %>%
+  mutate(south = ifelse(region == "South", 1, 0)) -> turnout_EU
+```
+
+# Introducción
+### Plan para Hoy
+
+*Vamos a hacer extensiones al modelo OLS que ya conocemos (i.e. regresión lineal bivariada).*
+  
+### Limitaciones de la Regresión Bivariada (o Simple)
+  
+  La regresión bivariada nunca es suficiente. 
+
+- En ciencia política y relaciones internacionales hay muchas variables de interés que no son de intervalo (i.e. medidas en escala continua, ordenadas y con intervalos iguales entre sus valores).
+- Regresión Bivariada no nos permite controlar por "confounders" (i.e. explicaciones alternativas).
+
+Este presentación nos ayudará a entender estos temas con más claridad. 
+
+# Extendiendo OLS
+## Variables Dicotómicas (Dummies)  
+### Variables Dicotómicas (Dummies)
+
+Las variables dicotómicas (dummy) están por todos lados en ciencias políticas y RI.
+
+- Juegan un papel importante en la regresión de efectos "fijos".
+- Algunas veces simplemente estamos interesados en el efecto de "una sola cosa".
+
+
+### Estados Pivotales (Swing States) y Turnout
+
+Vamos a regresar al ejemplo de turnout. Pero ahora estamos interesados en entender el efecto en turnout de un estado que es "pivotal". Variable "ss" en la base de datos. 
+
+- Asumamos (basados en los datos de 538) que los estados pivotales son: CO, FL, IA, MI, MN, NV, NH, NC, OH, PA, VA, y WI. 
+- Cuando *x* = 0, tenemos *y*-intercept.
+
+### En R
+
+\scriptsize
+
+```{r showm1, echo=TRUE, eval=F}
+M1 <- lm(turnoutho ~ ss, data=election_turnout)
+
+library(stargazer)
+stargazer(M1, style="ajps",
+           omit.stat=c("F","rsq","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels=c("Estado Pivotal"),
+           title="Efecto de Estado Pivotal en Turnout, 2016")
+
+```
+
+###
+
+```{r m1, echo=F, eval=T, results="asis"}
+
+M1 <- lm(turnoutho ~ ss, data=election_turnout)
+
+library(stargazer)
+stargazer(M1, style="ajps",
+           omit.stat=c("F","rsq","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels=c("Estado Pivotal"),
+           title="Efecto de ser Estado Pivotal en Turnout, 2016")
+
+```
+
+### Estados Pivotales (Swing States) y Turnout
+
+- El turnout estimado en estados "seguros" es 59.09%
+- El turnout estimado en estados "pivotales" es 66.46%
+- El efecto de un estado pivotal en turnout es **7.37%** (e.s. = 1.75)
+- El valor de *t* es 4.22
+
+Podemos inferir con alto grado de confianza que ser un estado pivotal tiene un efecto positivo en turnout. 
+
+### Variación Regional y Turnout
+
+Los estados del Sur tienden a tener niveles de turnout bajos.
+
+- La mayoría son estados "seguros".
+- Tienen alto porcentaje de pobreza que incrementa el costo de salir a votar.
+- Tienen historia de amplias restricciones en el derecho a votar. 
+
+Vamos primero a desempacar "variación regional" viendo el efecto que tiene el Sur (relativo a no-Sur) en turnout. 
+
+
+###
+
+```{r m2, echo=F, eval=T, results="asis"}
+M2 <- lm(turnoutho ~ south, data=turnout_EU)
+
+stargazer(M2, style="ajps",
+           omit.stat=c("F","rsq","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels=c("Sur"),
+          title="Efecto de ser un Estado del Sur en Turnout, 2016")
+```
+
+### Variación Regional y Turnout
+
+- El turnout estimado en estados que no son del sur es 61.98%.
+- El turnout estimado en estados del sur es `58.51%.
+- El efecto estimado del "Sur" es **-3.46%** .
+- *t*: -1.96
+
+Los resultados sugieren en efecto negativo. 
+- Pero no es un efecto muy grande.  La diferencia es de aproximadamente 3%. 
+
+## Modelos con Efectos Fijos
+### Efectos Fijos de Región y Turnout
+
+El modelo anterior no es muy informativo. 
+
+- Además, es un tanto problemático porque trata a todos los estados que no están en el sur como homogéneos. 
+
+Obviously, this last regression isn't that informative.
+
+- It also problematically treats non-Southern states as homogenous.
+- Una R$^2$ baja suggiere que:
+
+Podemos especificar otras regiones como "efectos fijos".
+
+- Estos modelos tratan a las variables explicativas como una serie de variables dummy para cada valor de *x*.
+- Un grupo se deja afuera como "categoría base" 
+	- O no tendríamos intercepto en *y*.
+
+### En R
+
+```{r M3, echo=F, eval=T, results="asis"}
+turnout_EU %>%
+  mutate(regionf = forcats::fct_relevel(region, "South", "Northeast", "North Central", "West")) -> turnout_EU
+
+M3 <- lm(turnoutho ~ regionf, data=turnout_EU)
+
+stargazer(M3, style="ajps",
+           omit.stat=c("F","rsq","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels=c("Noreste", "Medio-Oeste", "Oeste"),
+           title= "Efecto de Regiones en Turnout, 2016")
+```
+
+
+### Efectos Fijos de Región y Turnout
+
+Interpretación de esta regresión:
+
+Todos los coeficientes indican el efecto de esa región **contra** la categoría base. 
+
+- La categoría base en este modelo es el Sur.
+- El turnout estimado en el Sur es 58.51%.
+- El turnout en el Noreste es sustancialmente más alto que en el Sur (*t* = 2.59).
+- El turnout en el Medio-Oeste es más alto que en el sur (*t* = 2.23).
+- No hay diferencia significativa importante entre el turnout en el Oeste y en el Sur (*t* = 0.19).
