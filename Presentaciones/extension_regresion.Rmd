@@ -165,7 +165,7 @@ stargazer(M2, style="ajps",
 ### Variación Regional y Turnout
 
 - El turnout estimado en estados que no son del sur es 61.98%.
-- El turnout estimado en estados del sur es `58.51%.
+- El turnout estimado en estados del sur es 58.51%.
 - El efecto estimado del "Sur" es **-3.46%** .
 - *t*: -1.96
 
