@@ -19,6 +19,6 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Marzo 20| Examen 1 |[Respuestas](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen1_solucion.pdf)||||
 |Abril 1| Correlación | [Presentación 6](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/corr_reg_update.pdf) | ||A (9.4)|
 |Abril 3| Intro Regresión Lineal Simple | [Presentación 6](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/corr_reg_update.pdf) | ||A (9.1-9.3)|
-|Abril 10| Diagnósticos Regresión Lineal | [Presentación 7](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/supuestos_OLS.pdf) | Laboratorio 3 |||
+|Abril 10| Diagnósticos Regresión Lineal | [Presentación 7](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/supuestos_OLS.pdf) | [Laboratorio 3](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab3.pdf) |||
 |Abril 15 | OLS Bivariado y Diagnóstico: Ejemplo Práctico | [RPubs](https://rpubs.com/bebejar/1173603) ||||
 |Abril 17 | Extensiones a Regresión Bivariada | [Presentación 8](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/extension_OLS.pdf) ||||
