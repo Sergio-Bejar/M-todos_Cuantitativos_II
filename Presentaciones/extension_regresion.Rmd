@@ -217,3 +217,207 @@ Todos los coeficientes indican el efecto de esa región **contra** la categoría
 - El turnout en el Noreste es sustancialmente más alto que en el Sur (*t* = 2.59).
 - El turnout en el Medio-Oeste es más alto que en el sur (*t* = 2.23).
 - No hay diferencia significativa importante entre el turnout en el Oeste y en el Sur (*t* = 0.19).
+
+## Regresión Múltiple
+### Regresión Múltiple
+
+El ejemplo anterior (i.e. efectos fijos por región) es un ejemplo de **regresión múltiple**. 
+
+- Pero no tiene variables de control. 
+
+La regresión múltiple produce **coeficientes parciales de regresión**.
+
+
+### Regresión Múltiple
+
+Regresemos al ejemplo de turnout. Asumamos: 
+
+- $x_1$: % de ciudadanos en el estado con licenciatura. 
+- $x_2$: estados en el Sur.
+- $x_3$: estado es pivotal.
+
+Importante: al añadir variables estamos "controlando" por confounders potenciales. 
+
+
+### Racional al Usar Variables de Control
+
+Asumamos que uno de ustedes esta proponiendo un argumento en el que el nivel de educación a nivel estatal explica turnout. Yo podría decir que hay un **"sesgo por variables omitidas"** por lo siguiente:
+
+- Ser un estado en el Sur disminuye educación y turnout. 
+- El efecto de ser un "estado pivotal" puede explicar el nivel de educación e incrementar turnout. 
+
+En otras palabras, yo sostengo que tu argumento relacionando educación (*x*) con turnout (*y*) es espurio a estos factores (*z*).
+
+- Para eso "controlamos". No queremos explicar variación sino ver el efecto de los confounders. 
+
+### En R
+
+```{r M4, echo=F, eval=T, results="asis"}
+
+M4 <- lm(turnoutho ~ percoled + south + ss, data=turnout_EU)
+
+stargazer(M1, M2, M4, style="ajps",
+           omit.stat=c("F","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels=c("Universidad", "Estado Pivotal", "Sur"),
+           title= "Comparación de Modelos")
+```
+
+### Regresión Múltiple
+
+- Turnout estimado para (1) estado no en el Sur, (2) no pivotal, y (3) nadie se gradua de la universidad es 48.48%.
+    - Parece razonable pero el valor mínimo de turnout en los datos es 19.2% (West Virgina).
+
+- El coeficiente parcial de regresión para la variable "universidad" es .38 (*t* = 3.47).
+- El coeficiente parcial de regresión para la variable "Sur" es insignificante.
+- El efecto estimado de ser un "estado pivotal" es de un incremento de ~7% (*t* = 4.53) en turnout.
+
+
+## Efectos Interactivos
+### Efectos Interactivos
+
+La regresión múltiple es lineal y aditiva.
+
+- Sin embargo, algunos efectos (digamos: $x_1$) pueden depender en el valor de otra variable (digamos: $x_2$).
+
+A esto le llamamos un **efecto interactivo**.
+
+### Ejemplo del Mundo Real 
+
+Consideremos el aegumento de Zaller (1992):
+
+- Democrats son ligeramente más pro-aborto que los Republicanos.
+- Esa diferencia es condicional en que tanto los individuos entienden de política.
+
+Usaremos datos de ANES 2012 para evaluar esta hipótesis.
+
+### Nuestros Datos
+
+
+**Variables Independientes**: Partidismo (Party ID), conocimiento político, interacción entre las dos variables. 
+
+- Partidismo: (0 = Dem, 1 = Independiente, 2 = Rep)
+- Conocimiento político: la persona sabe quién es el Orador de la Cámara de Representantes?
+
+
+### Nuestros Datos
+
+**Variable Dependiente**: Score pro-aborto.
+
+El estimado tiene media cero y desviación estándar de uno.
+
+- Valores más altos = más "pro-aborto."
+
+###
+
+```{r hist, echo=F, warning=F}
+ggplot(anes_prochoice, aes(lchoice)) + 
+  geom_density() + theme_steve_web() +
+  xlim(-2.5,2.5) +
+  labs(title = "Densidad del Score Pro-Aborto (ANES, 2012)",
+       subtitle = "",
+       y = "Densidad", x="Score Pro-Aborto",
+       caption = "Data: ANES (2012).")
+```
+
+### Efectos Interactivos
+
+La fórmula de esta regresión quedaría de la siguiente forma:
+
+$$
+\hat{y} = \hat{a} + \hat{b_1}(x_1) + \hat{b_2}(x_2) + \hat{b_3}(x_1*x_2)
+$$
+
+where:
+
+- $\hat{y}$ = valor estimado de score pro-aborto.
+- $x_1$ = partidismo (0 = Dems, 1 = Ind., 2 = Rep).
+- $x_2$ = conocimiento político (0 = no conoce al Orador, 1 = conoce al Orador).
+- $x_1 * x_2$ = producto de las dos variables.
+
+### Interpretación de los Coeficientes
+
+*Hay que tener cuidado cuando interpretamos los coeficientes de regresión en este caso.*
+
+- El coeficiente de regresión de partidismo es el efecto de partidismo cuando conocimiento político = 0. 
+- El coeficiente de conocimiento político es el efecto de conocimiento político cuando partidismo = 0 (i.e. entre Demócratas).
+
+
+### En R
+
+\tiny
+
+```{r showm5, echo=T, eval=F}
+M5 <- lm(lchoice ~ pid*knowspeaker, data=anes_prochoice)
+M5df <- broom::tidy(M5)
+
+stargazer(M1, M2, M4, style="ajps",
+           omit.stat=c("F","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels = c("partidismo", "conocimiento pol.", "interacción"),
+           title= "Efectos Interactivos")
+```
+
+###
+
+```{r m5, echo=F, eval=T, results="asis"}
+M5 <- lm(lchoice ~ pid*knowspeaker, data=anes_prochoice)
+M5df <- broom::tidy(M5)
+
+stargazer(M5, style="ajps",
+           omit.stat=c("F","ser"), header=FALSE,
+           dep.var.labels.include = FALSE,
+           covariate.labels = c("partidismo", "conocimiento político", "part*conoc"),
+           title= "Efectos Interactivos")
+```
+
+### Efectos Interactivos
+
+Interpretación de Tabla 5:
+
+- El estimado del score pro-aborto es `r round(M5df$estimate[1], 3)` para Demócratas con poco conocimiento político.
+-  $\hat{b_1}$, $\hat{b_2}$, and $\hat{b_3}$ son estadísticamente insignificantes.
+- Cuando $x_1$ y $x_2$ $=$ 1, restamos `r round(M5df$estimate[4], 3)` de $\hat{y}$.
+- Conocimiento político produce scores pro-aborto más altos entre demócratas.
+
+### Efectos Interactivos
+
+Esto pasa para demócratas:
+
+- $\hat{y}$ para demócratas con bajo conocimiento: `r with(M5df, round(estimate[1], 3))`.
+- $\hat{y}$ para demócratas con alto conocimiento: `r with(M5df, round(estimate[1] + estimate[3]*1, 3))`.
+
+Para Republicanos es más interesante:
+
+- $\hat{y}$ para Republicanos con bajo conocimiento: `r with(M5df, round(estimate[1] + estimate[2]*2, 3))`.
+- $\hat{y}$ para Republicanos con alto conocimiento : `r with(M5df, round(estimate[1] + estimate[2]*2 + estimate[3]*1 + estimate[4]*2, 3))`.
+
+Vemos un efecto **grande** de conocimiento político en Demócratas, pero en Republicanos es muy.. **muy pequeño**. 
+
+###
+
+```{r showeffect, echo=F, warning=F}
+
+lkd <- with(M5df, round(estimate[1], 3))
+hkd <- with(M5df, round(estimate[1] + estimate[3]*1, 3))
+lkr <- with(M5df, round(estimate[1] + estimate[2]*2, 3))
+hkr <- with(M5df, round(estimate[1] + estimate[2]*2 + estimate[3]*1 + estimate[4]*2, 3))
+
+ggplot(anes_prochoice, aes(lchoice)) + 
+  geom_density() + theme_steve_web() +
+  xlim(-2.5,2.5) +
+  labs(title = "Plot de Densidad para Score Pro-Aborto con Efectos Interactivos",
+       subtitle = "Hay que notar que el efecto de conocimiento político es mucho más grande para Demócratas que para Republicanos.",
+       y = "Densidad", x="Score Pro-Aborto",
+       caption = "Líneas Sólidas = bajo conocimiento. Líneas discontinuas= conocimiento alto.") +
+  geom_segment(x=lkd, y=0, xend=lkd, yend=.6, color="blue") +
+  geom_segment(x=hkd, y=0, xend=hkd, yend=.6, color="blue", linetype="dashed") +
+  geom_segment(x=lkr, y=0, xend=lkr, yend=.6, color="red") +
+  geom_segment(x=hkr, y=0, xend=hkr, yend=.6, color="red", linetype="dashed") +
+  geom_segment(x=lkd+.01, y=.1, xend=hkd-.01, yend=.1, color="blue",
+               arrow = arrow(length = unit(0.15, "cm")))
+
+```
+
+
+
