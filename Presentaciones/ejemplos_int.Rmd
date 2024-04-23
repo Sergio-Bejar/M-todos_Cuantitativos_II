@@ -1,0 +1,72 @@
+---
+title: "Ejemplos Modelos con Interacciones"
+output: html_document
+date: "2024-04-23"
+---
+
+## Ejemplo 1: Una variable binaria y una continua
+
+En este ejemplo vamos a suponer que estamos interesados en conocer el ingreso de actores en Televisa ($y$). Además supongamos que dicho ingreso tiene dos variables predictivas. La primera ($x_1$), es una variable binaria que toma el valor de 0 (hombres) y 1 (mujeres). La segunda ($x_2$) es una variale continua que va de -5 a 5. En otras palabras, $x_2$ es una medida centrada y estandarizada de edad.  
+
+Vamos a simular unos datos para ilustrar este ejemplo. La base de datos va a tener 200 observaciones y dos variables predictivas: $x_1$(binaria: hombre/mujer) y $x_2$ (continua: estandarizada y centrada). Además vamos a crear la variable dependiente $y$, que va a ser igual a la combinación lineal de $x_1$, $x_2$ y la interacción entre  $x_1$ y $x_2$ ( $x_1$*$x_2$).
+
+```{r}
+set.seed(1234)
+n.sample <- 200
+x1 <- rbinom(n.sample, size = 1, prob = 0.5)
+x2 <- runif(n.sample, -5, 5)
+a <- 5
+b1 <- 3
+b2 <- 4
+b3 <- -3
+e <- rnorm(n.sample, 0, 5)
+y <- a + b1 * x1 + b2 * x2 + b3 * x1 * x2 + e
+sim.dat <- data.frame(y, x1, x2)
+```
+
+Veamos como se ven las variables creadas.
+
+```{r}
+par(mfrow = c(1, 3))
+hist(sim.dat$y)
+hist(sim.dat$x1)
+hist(sim.dat$x2)
+```
+
+Ahora vamos a estimar el modelo usando los datos generados. 
+
+```{r}
+mod.sim <- lm(y ~ x1 * x2, dat = sim.dat)
+summary(mod.sim)
+```
+
+Lo primero que voy a hacer es graficar la relación que existe entre la variable continua $x_2$ y $y$ para todas las observaciones en donde $x_1$ = 0. Recordemos que la linea de regresión cuando $x_1$ = 0 esta definida por un intercepto ($\alpha$) y la pendiente ($\beta_2$). Los valores de estos parámetros los podemos sacar del objeto `lm` usando la función `coef()`.
+
+```{r}
+coef(mod.sim)
+```
+
+```{r}
+coef(mod.sim)[1]
+```
+
+```{r}
+plot(x = sim.dat[sim.dat$x1 == 0, ]$x2, y = sim.dat[sim.dat$x1 == 0, ]$y, 
+     col = rgb(red = 0, green = 0, blue = 1, alpha = 0.25), pch = 19,
+     xlab = "x2", ylab = "y")
+abline(a = coef(mod.sim)[1], b = coef(mod.sim)[3], col = "blue", pch = 19, lwd = 2)
+```
+
+¿Qué relación existe entre $x_2$ y $y$ cuando $x_1$ = 0?
+
+Ahora agreguemos las puntos y nuestra línea de regresión cuando $x_1$ = 0. 
+
+```{r}
+plot(x = sim.dat[sim.dat$x1 == 0, ]$x2, y = sim.dat[sim.dat$x1 == 0, ]$y, 
+     pch = 19, xlab = "x2", ylab = "y", col = rgb(red = 0, green = 0, blue = 1, alpha = 0.25))
+abline(a = coef(mod.sim)[1], b = coef(mod.sim)[3], col = "blue", lwd = 2)
+points(x = sim.dat[sim.dat$x1 == 1, ]$x2, y = sim.dat[sim.dat$x1 == 1, ]$y, 
+       col = rgb(red = 1, green = 0, blue = 0, alpha = 0.25), pch = 19)
+abline(a = coef(mod.sim)[1] + coef(mod.sim)[2], b = coef(mod.sim)[3] + coef(mod.sim)[4], 
+       col = "red", lwd = 2)
+```
