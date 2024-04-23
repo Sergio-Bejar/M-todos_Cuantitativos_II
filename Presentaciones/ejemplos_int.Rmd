@@ -70,3 +70,32 @@ points(x = sim.dat[sim.dat$x1 == 1, ]$x2, y = sim.dat[sim.dat$x1 == 1, ]$y,
 abline(a = coef(mod.sim)[1] + coef(mod.sim)[2], b = coef(mod.sim)[3] + coef(mod.sim)[4], 
        col = "red", lwd = 2)
 ```
+
+## Ejemplo 2: Dos variables continuas
+
+Ahora vamos a simular otra base de datos, asumiendo que nuestra variable dependiente es continua $y$ que representa el salario de los jugadores de futbol en la Liga Mexicana. También podemos asumir que $x_1$ es una variabe continua que se distribuye normalmente con una media de 2 y una desviación estándar de 5 (i.e. es una medida estandarizada del riesgo de lesión de cada jugador). $x_2$, como en el ejemplo anterior es una variable continua que tiene un rango de -5 a 5 (i.e. edad del jugador). Aquí podríamos estar pensando en un efecto condicional, en donde jugadores de más edad ganan más dinero -pero sólo si su riesgo de lesión es bajo. Jugadores más veteranos con riesgo de lesión más alto ganarán menos dinero. 
+
+
+Primero, creamos los datos.
+
+```{r}
+set.seed(1234)
+n.sample <- 200
+x1 <- rnorm(n.sample, mean = 2, sd = 5)
+x2 <- runif(n.sample, -5, 5)
+a <- 5
+b1 <- 3
+b2 <- 4
+b3 <- -3
+e <- rnorm(n.sample, 0, 20)
+y <- a + b1 * x1 + b2 * x2 + b3 * x1 * x2 + e
+sim.dat2 <- data.frame(y, x1, x2)
+```
+
+Ahora estimamos nuestro modelo de regresión. 
+
+```{r}
+mod.sim3 <- lm(y ~ x1 * x2, dat = sim.dat2)
+summary(mod.sim3)
+```
+
