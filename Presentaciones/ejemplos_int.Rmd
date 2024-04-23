@@ -99,3 +99,20 @@ mod.sim3 <- lm(y ~ x1 * x2, dat = sim.dat2)
 summary(mod.sim3)
 ```
 
+Ahora vamos a calcular el efecto de $x_1$ en $y$ para diferentes niveles de $x_2$, digamos a través del rango de $x_2$ con incrementos de 1. Esta secuencia la podemos crear en R usando la función `seq()`
+
+```{r}
+x2.sim <- seq(from = -5, to = 5, by = 1)
+x2.sim
+```
+
+```{r}
+eff.x1 <- coef(mod.sim3)[2] + coef(mod.sim3)[4] * x2.sim
+```
+
+Y ahora podemos ver la lista de valores del efecto que tiene la variable $x_1$ para los diferentes niveles de $x_2$. 
+
+```{r}
+eff.dat <- data.frame(x2.sim, eff.x1)
+eff.dat
+```
