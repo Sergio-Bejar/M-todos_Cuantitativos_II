@@ -1,0 +1,185 @@
+---
+title: "Ejemplos Modelos con Interacciones"
+output: html_document
+date: "2024-04-23"
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Ejemplo 1: Una variable binaria y una continua
+
+En este ejemplo vamos a suponer que estamos interesados en conocer el ingreso de actores en Televisa ($y$). Además supongamos que dicho ingreso tiene dos variables predictivas. La primera ($x_1$), es una variable binaria que toma el valor de 0 (hombres) y 1 (mujeres). La segunda ($x_2$) es una variale continua que va de -5 a 5. En otras palabras, $x_2$ es una medida centrada y estandarizada de edad.  
+
+Vamos a simular unos datos para este ejemplo. Nuestra base va a tener 200 observaciones y dos variables predictivas: $x_1$(binaria: hombre/mujer) y $x_2$ (continua: estandarizada y centrada). Además vamos a crear la variable dependiente $y$, que va a ser igual a la combinación lineal de $x_1$, $x_2$ y la interacción entre  $x_1$ y $x_2$ ( $x_1$*$x_2$).
+
+```{r}
+set.seed(1234)
+n.sample <- 200
+x1 <- rbinom(n.sample, size = 1, prob = 0.5)
+x2 <- runif(n.sample, -5, 5)
+a <- 5
+b1 <- 3
+b2 <- 4
+b3 <- -3
+e <- rnorm(n.sample, 0, 5)
+y <- a + b1 * x1 + b2 * x2 + b3 * x1 * x2 + e
+sim.dat <- data.frame(y, x1, x2)
+```
+
+Veamos como se ven las variables creadas.
+
+```{r}
+par(mfrow = c(1, 3))
+hist(sim.dat$y)
+hist(sim.dat$x1)
+hist(sim.dat$x2)
+```
+
+Ahora vamos a estimar el modelo usando los datos generados. 
+
+```{r}
+mod.sim <- lm(y ~ x1 + x2 + x1 * x2, dat = sim.dat)
+summary(mod.sim)
+```
+
+Lo primero que voy a hacer es graficar la relación que existe entre la variable continua $x_2$ y $y$ para todas las observaciones en donde $x_1$ = 0. Recordemos que la linea de regresión cuando $x_1$ = 0 esta definida por un intercepto ($\alpha$) y la pendiente ($\beta_2$). Los valores de estos parámetros los podemos sacar del objeto `lm` usando la función `coef()`.
+
+```{r}
+coef(mod.sim)
+```
+
+```{r}
+coef(mod.sim)[1]
+```
+
+```{r}
+plot(x = sim.dat[sim.dat$x1 == 0, ]$x2, y = sim.dat[sim.dat$x1 == 0, ]$y, 
+     col = rgb(red = 0, green = 0, blue = 1, alpha = 0.25), pch = 19,
+     xlab = "x2", ylab = "y")
+abline(a = coef(mod.sim)[1], b = coef(mod.sim)[3], col = "blue", pch = 19, lwd = 2)
+```
+
+¿Qué relación existe entre $x_2$ y $y$ cuando $x_1$ = 0?
+
+Ahora agreguemos las puntos y nuestra línea de regresión cuando $x_1$ = 0. 
+
+```{r}
+plot(x = sim.dat[sim.dat$x1 == 0, ]$x2, y = sim.dat[sim.dat$x1 == 0, ]$y, 
+     pch = 19, xlab = "x2", ylab = "y", col = rgb(red = 0, green = 0, blue = 1, alpha = 0.25))
+abline(a = coef(mod.sim)[1], b = coef(mod.sim)[3], col = "blue", lwd = 2)
+points(x = sim.dat[sim.dat$x1 == 1, ]$x2, y = sim.dat[sim.dat$x1 == 1, ]$y, 
+       col = rgb(red = 1, green = 0, blue = 0, alpha = 0.25), pch = 19)
+abline(a = coef(mod.sim)[1] + coef(mod.sim)[2], b = coef(mod.sim)[3] + coef(mod.sim)[4], 
+       col = "red", lwd = 2)
+```
+
+
+## Ejemplo 2: Dos variables continuas
+
+Ahora vamos a simular otra base de datos, asumiendo que nuestra variable dependiente es continua $y$ y que representa el salario de los jugadores de fútbol en la Liga Mexicana. También podemos asumir que $x_1$ es una variabe continua que se distribuye normalmente con una media de 2 y una desviación estándar de 5 (i.e. es una medida estandarizada del riesgo de lesión de cada jugador). $x_2$, como en el ejemplo anterior es una variable continua que tiene un rango de -5 a 5 (i.e. edad del jugador). Aquí podríamos estar pensando en un efecto condicional, en donde jugadores de más edad ganan más dinero -pero sólo si su riesgo de lesión es bajo. Jugadores más veteranos con riesgo de lesión más alto ganarán menos dinero. 
+
+
+Primero, creamos los datos.
+
+```{r}
+set.seed(1234)
+n.sample <- 200
+x1 <- rnorm(n.sample, mean = 2, sd = 5)
+x2 <- runif(n.sample, -5, 5)
+a <- 5
+b1 <- 3
+b2 <- 4
+b3 <- -3
+e <- rnorm(n.sample, 0, 20)
+y <- a + b1 * x1 + b2 * x2 + b3 * x1 * x2 + e
+sim.dat2 <- data.frame(y, x1, x2)
+```
+
+Estimamos nuestro modelo de regresión. 
+
+```{r}
+mod.sim3 <- lm(y ~ x1 * x2, dat = sim.dat2)
+summary(mod.sim3)
+```
+
+Ahora vamos a calcular el efecto de $x_1$ en $y$ para diferentes niveles de $x_2$, digamos a través del rango de $x_2$ con incrementos de 1. Esta secuencia la podemos crear en R usando la función `seq()`
+
+```{r}
+x2.sim <- seq(from = -5, to = 5, by = 1)
+x2.sim
+```
+
+```{r}
+eff.x1 <- coef(mod.sim3)[2] + coef(mod.sim3)[4] * x2.sim
+```
+
+Y ahora podemos ver la lista de valores del efecto que tiene la variable $x_1$ para los diferentes niveles de $x_2$. 
+
+```{r}
+eff.dat <- data.frame(x2.sim, eff.x1)
+eff.dat
+```
+
+El objeto eff.x1 es ahora el coeficiente de $x_1$ para cada nivel de $x_2$. Podemos entonces decir que $x_2$ es una "variable moderadora" porque modera el efecto de $x_1$.  Específicamente, podemos ver que $x_1$ tiene un efecto positivo en $y$ cuando $x_2$ es menor a 1. A partir de $x_2$ = 1, el efecto de $x_1$ en $y$ se vuelve negativo.  
+
+# Funciones en R para graficar efectos marginales (OLS)
+
+Hoy en día existen varias funciones que nos permiten graficar los efectos marginales de variables continuas y/o discretas en R. Para este ejemplo en particular, voy a utilizar la función `interplot` del paquete "interplot". Para poder dicha función primero debemos instalar el paquetes "interplot", cargarlo y luego especificar la función al menos con los siguientes elementos:
+
+```{r, warning = FALSE}
+# install.packages("interplot")
+library(interplot)
+
+interplot(mod.sim3, 
+          var1 = "x1",
+          var2 = "x2")+
+  labs(x = "X2",
+       y = "Efecto Condicional de x1")
+```
+
+## Ejemplo 3: "Electoral Institutions, Unemployment and Extreme Right Parties: A Correction."
+
+Ahora vamos a ver un ejemplo con datos reales sobre el éxito electoral de los partidos de extrema-derecha en 16 países (102 elecciones). Los datos vienen de un artículo publicado en 2003 en *BJPS* (Golder, 2003). 
+
+```{r}
+golder <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/golder2003.csv") 
+summary(golder)
+```
+
+```{r}
+par(mfrow = c(2, 2))
+hist(golder$lerps)
+hist(golder$thresh)
+hist(golder$enp)
+hist(golder$unemp)
+```
+
+|**Variable**|**Descripción**|
+|------------| --------------|
+|lerps| logaritmo del % de votos de partidos de extrema derecha +1|
+|tresh | % mínimo de votos necesarios para ganar representación (threshold)| 
+|enp | número efectivo de partidos |
+| unemp | tasa de desempleo |
+| country | país |
+| year | año | 
+
+Golder (2003) estudia la relación que existe entre el apoyo electoral a los partidos de extrema derecha (variable dependiente). el % mínimo de votos necesario para ganar representación en la Cámara (primera variable de interés) y el número efectivo de partidos políticos (segunda variable de interés). La hipótesis es condicional y sugiere que el efecto del % mínimo de votos necesarios para ganar representación es condicional en el número efectivo de partidos. 
+
+```{r}
+# Modelo Golder
+m_golder <- lm(lerps ~ thresh + enp + thresh * enp + unemp + factor(country), data = golder)
+library(texreg)
+screenreg(list(m_golder), omit.coef = "country")
+```
+
+```{r}
+interplot(m_golder, 
+          var1 = "thresh",
+          var2 = "enp")+
+  labs(x = "enp",
+       y = "Efecto Condicional de threshold")
+```
+
+Como podemos ver en el gráfico anterior, la variable "thresh" tiene un efecto positivo en la variable dependiente ("lerps") para valores menores a 2.6 en la variable "enp". A partir de ahí, el effecto de "thresh" es negativo. 
