@@ -1,0 +1,30 @@
+---
+title: "Laboratorio 4"
+format: pdf
+editor: visual
+---
+
+Instrucciones
+
+Este laboratorio hace referencia a temas abordados en clase sobre regresión lineal múltiple. Tienes la opción de contestarlo en equipos de hasta 3 personas (máx.) o de manera individual. El archivo con las respuestas lo debes enviar por email a mi correo electrónico (sergio.bejar@cide.edu) a más tardar el lunes 6 de mayo, 2023 a las 12:00pm.  
+
+La base de datos que vamos a utilizar se encuentra en el folder "Files" del repositorio Github de la clase y se llama ("OECD_country_data.xls"). 
+
+Ejercicio 1: Duración de Gobiernos Democráticos
+
+Durante mucho tiempo, los politólogos han estudiado las variables que explican por qué unos gobiernos democráticos (especialmente parlamentarios) duran más que otros. En ese sentido, algunos de ellos argumentan que dicha variación se puede explicar por las características de los gobiernos en turno: el nivel de apoyo parlamentario de los partidos en el gobierno, el número de partidos en el gobierno, y la disciplina que dichos partidos imponen a sus miembros.  Esto lo podemos expresar formalmente de la siguiente forma:
+
+$$
+Duracion = \alpha + \beta_1*Apoyo + \beta_2*No.Partidos + \beta_3*Disciplina + \epsilon
+$$
+
+Para evaluar este argumento vamos a utilizar la base de datos descrita anteriormente y que contiene información relevante para países miembros de la OECD. 
+
+Carga los datos en R e identifica las variables que son relevantes para este análisis. El archivo contiene una segunda pestaña que describe detalladamente las variables (en inglés).  Pista: para ver la descripción de las variables puedes usar el argumento sheet = de la función read_xls(). (5 pts.)
+
+Utlizando dichos datos, estima un modelo de regresión lineal que evalúe el argumento descrito, presenta los resultados e interprétalos substantivamente. (15 pts.)
+
+Al ver tus resultados, un compañerx de clase sugiere que la disciplina partidaria no tiene un efecto independiente en la duración de los gobiernos, sino que condiciona el efecto de las otras dos variables en tu modelo. 
+
+Especifica un modelo que tome en cuenta esta crítica, estímalo usando OLS, presenta los resultados, e interprétalos en forma substantiva. (20 pts.)
+
