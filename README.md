@@ -24,3 +24,4 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Abril 17 | Extensiones a Regresión Bivariada | [Presentación 8](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/extension_OLS.pdf) ||||
 |Abril 22 | Regresión Múltiple e Interacciones | [Presentación 8](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/extension_regbiv_completa.pdf) ||||
 |Abril 24 | Ejemplos e Interpretación de Interacciones | [RPubs](https://rpubs.com/bebejar/1177751) ||||
+|Abril 29|  |  | [Laboratorio 4](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab4.pdf) |||
