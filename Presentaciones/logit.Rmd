@@ -1,0 +1,442 @@
+---
+output: 
+  stevetemplates::beamer:
+    keep_tex: TRUE
+    latex_engine: pdflatex 
+    dev: cairo_pdf 
+    slide_level: 3 
+    theme: metropolis
+title: Regresión Logística
+subtitle: Mayo 8, 2024
+author: Prof. Sergio Béjar
+institute: Departamento de Estudios Políticos, CIDE
+fontsize: 10pt
+make149: TRUE
+# mainfont: "Open Sans Light" # Try out some font options if xelatex
+# titlefont: "Titillium Web" # Try out some font options if xelatex
+# specify color as six-digit RGB (no pound sign)
+# primarycolor: "990000" 
+# secondarycolor: "000099"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE, warning=F, message=F)
+knitr::opts_chunk$set(fig.path='figs/',  fig.width=14, fig.height=8.5)
+knitr::opts_chunk$set(cache.path='cache/')
+
+knitr::opts_chunk$set(
+                  fig.process = function(x) {
+                      x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+                      if (file.rename(x, x2)) x2 else x
+                      }
+                  )
+```
+
+
+```{r loaddata, echo=F, eval=T, message=F, warning=F}
+
+library(tidyverse)
+library(stevemisc)
+library(stevethemes)
+library(stevedata)
+library(stargazer)
+library(modelsummary)
+library(kableExtra)
+library(lmtest)
+library(patchwork)
+library(sandwich)
+library(readr)
+
+
+options("modelsummary_format_numeric_latex" = "plain")
+options(knitr.kable.NA = '')
+
+set.seed(8675309)
+turnout_EU <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/election_turnout.csv") 
+anes_prochoice <- rio::import("https://raw.githubusercontent.com/Sergio-Bejar/MCA_CIDE/main/Files/anes_prochoice.csv")
+  
+  
+turnout_EU %>%
+  mutate(south = ifelse(region == "South", 1, 0)) -> turnout_EU
+```
+
+# Introducción
+### Plan para Hoy
+
+*Discutir regresión logística (logit) para variables binarias.*
+
+
+### Yendo Más lejos en Estadística Aplicada
+
+Ya tenemos herramientas para responder a nuestras propias preguntas en CP/RI. 
+
+- Sabemos como manipular datos.
+- Creemos que la variación en  *y* se puede atribuir a la variación en *x*.
+- Después de controlar por explicaciones alternativas (*z*), nuestra regresión lineal produce el efecto parcial de *x* en *y*.
+
+La regresión lineal (OLS) nos da la línea que mejor se adapta a los datos.
+
+- Para producir esa linea se minimiza la suma al cuadrado de diferencias al cuadrado (de aquí viene: OLS).
+
+### OLS
+
+OLS tiene muchas propiedades.
+
+- Mejor estimador lineal sin sesgo (BLUE - Best Linear Unbiased Estimator).
+- Es fácil de ejecutar y de interpretar.
+
+Sería una *lástima* que algo pasara con alguno de nuestros supuestos.
+  
+### El Problema de las Variables Dependientes **Binarias**
+
+Uno de los mayores problemas con los que nos podemos encontrar tiene que ver con la variable dependiente. 
+
+- OLS asume que la VD se distribuye normalmente.
+
+Pero en muchas ocasiones nos vamos a encontrar con VDs que son binarias. 
+
+- Candidato gana/pierde.
+- Ciudadano votó/no votó.
+- Programa exitoso/no exitoso.
+- Guerra sucedió/no sucedió.
+
+Muchos fenómenos políticos/sociales se miden con variables binarias ("esta"/"no esta"). 
+
+### Implicaciones cuando Supuestos de OLS son Violados
+
+1. Tus errores serán **heteroesquedásticos.**
+2. Tus $\hat{y}$s no harán mucho sentido.
+
+
+### La Historia de Dos Regresiones
+
+\scriptsize
+```{r}
+
+# ¿Cuál fue el % de turnout?
+# Vamos a omitir Hawaii y DC porque son outliers potenciales.
+M1 <- lm(turnoutho ~ percoled + ss, 
+         data=subset(turnout_EU, state %nin% c("Hawaii", "District of Columbia")))
+
+# ¿Ganó Trump (1) o no (0)?
+M2 <- lm(trumpw ~ percoled + ss, 
+         data=subset(turnout_EU, state %nin% c("Hawaii", "District of Columbia")))
+
+```
+
+\normalsize
+
+###
+
+
+```{r fitted-resid-m1, echo=F, warning=F}
+
+turnout_EU %>% filter(state %nin% c("Hawaii", "District of Columbia")) %>%
+    mutate(fitted = fitted(M1),
+           resid = resid(M1)) %>%
+    ggplot(.,aes(fitted, resid)) + geom_point()  +
+    theme_steve_web() +
+    labs(x = "Valores Ajustados",
+         y = "Residuales",
+         caption = "Modelo linear simple donde turnout es DV y educación universitaria y estado pivotal son vars. explicativas.",
+         title = "Un Gráfico de Residuales-Ajustados Debe Verse Así.",
+         subtitle = "La variación entre lo que estimamos (fit) y el error que resulta de ello (residuales) es normal.")
+
+```
+
+###
+
+```{r fitted-resid-m2, echo=F, warning=F}
+
+turnout_EU %>% filter(state %nin% c("Hawaii", "District of Columbia")) %>%
+    mutate(fitted = fitted(M2),
+           resid = resid(M2)) %>%
+    ggplot(.,aes(fitted, resid)) + geom_point()  +
+    theme_steve_web() +
+    labs(x = "Valores Ajustados",
+         y = "Residuales",
+         caption = "Modelo linear simple donde Gana Trump o no es DV y educación universitaria y estado pivotal son vars. explicativas..",
+         title = "Un Gráfico de Residuales-Ajustados NO Debe Verse Así",
+         subtitle = "Si ves que hay patrones claros como en este gráfico, OLS no es (con alta probabilidad) el modelo que quieres.")
+
+```
+
+###
+
+```{r fitted-values-m1, echo=F, warning=F}
+
+turnout_EU %>% 
+  filter(state %nin% c("Hawaii", "District of Columbia")) %>%
+  mutate(fitted = fitted(M1)) %>%
+  ggplot(.,aes(fitted)) + 
+  theme_steve_web() +
+  geom_histogram(bins = 25, color="black", alpha=0.8) +
+  scale_x_continuous(limits = c(50, 100), breaks = seq(50, 100, by = 5)) +
+  labs(title = "Los Valores Estimados por el Modelo Lineal Deben ser Plausibles",
+       x = "Valores Ajustados",
+       y = "Cuenta",
+       subtitle = "En este ejemplo lo son. Turnout en todos los estados está entre 50s bajos y 70s medios, que es lo que estamos estimando.",
+       caption = "Hacer un histograma para una variable continua no es lo mejor, pero lo hago para efectos ilustrativos."
+       )
+
+```
+
+###
+
+```{r fitted-values-m2, echo=F, warning=F}
+turnout_EU %>% 
+  filter(state %nin% c("Hawaii", "District of Columbia")) %>%
+  mutate(fitted = fitted(M2)) %>%
+  ggplot(.,aes(fitted)) + 
+  theme_steve_web() +
+  geom_histogram(bins = 25, color="black", alpha=0.8) +
+  scale_x_continuous(breaks = seq(-.3, 1.3, by = .1),
+                     labels = scales::number_format(accuracy = 0.1)) +
+  geom_vline(xintercept = 0, linetype="dashed") +
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  annotate("rect", xmin = 0, xmax = -Inf, ymin = 0, ymax = Inf,
+        alpha = .2) +
+  annotate("rect", xmin = 1, xmax = Inf, ymin = 0, ymax = Inf,
+        alpha = .2) +
+  annotate("text", x = 1.1, y = 5.5, label = "Estimados Imposibles",
+           hjust = 0, family = "Open Sans") +
+  annotate("text", x = -0.3, y = 5.5, label = "Estimados Imposibles",
+           hjust = 0, family = "Open Sans") +
+  labs(title = "Los Valores Estimados por el Modelo Lineal deben ser Plausibles",
+       x = "Valores Ajustados",
+       y = "Cuenta",
+       subtitle = "En este ejemplo no lo son. La probabilidad debe estar delimitada entre 0 y 1.",
+       caption = ""
+       )
+```
+
+
+### ¿Qué Estimados Están Fuera de los Límites?
+
+\scriptsize
+```{r}
+turnout_EU %>% 
+  filter(state %nin% c("Hawaii", "District of Columbia")) %>%
+  mutate(fitted = fitted(M2)) %>%
+  filter(fitted > 1 | fitted < 0) %>%
+  select(state, trumpw, percoled, ss, fitted)
+
+```
+\normalsize
+
+### Limitantes con OLS
+
+Substantivamente, los coeficientes de regresión nos llevan a inferencias erróneas.
+
+- Recuerda: Los coeficientes OLS asumen efectos lineales y constantes de *x* en *y*.
+- Cuando solo tenemos 0s y 1s, los efectos lineales no son muy intuitivos.
+
+# Regresión Logística
+### Regresión Logística
+
+Abordaremos el problema de variables dependientes binarias con la **regresión logística**.
+
+- Nos dará el efecto de un cambio en una unidad de x en la *probabilidad logarítmica natural de y.*
+
+Vamos a empezar viendo que significa la "probabilidad logarítmica natural de y". 
+
+## Odds (Momios)
+### Odds (Momios)
+
+La palabra **momios** es muy utilizada en el mundo de las apuestas deportivas. 
+
+- Y está muy relacionada con la probabilidad. 
+
+Dada cierta probabilidad de que un evento *p* ocurra, los momios del evento son iguales a:
+
+$$
+\textrm{Momios} = \frac{p}{1-p}
+$$
+
+¿Alguna vez escuchaste algo como "los momios son 4 a 1 a favor" del caballo 8?
+
+- Traducción: por cada 5 intentos, esperamos que el caballo 8 gane en 4 ocasiones, en promedio. 
+
+### Educación y Probabilidad de Votar (Datos Hipotéticos)
+
+Vamos a ver esto con unos datos hipotéticos.
+
+```{r, echo=F, eval=T}
+tibble(educat = c(rep("0: Low", 100),
+                  rep("1: Mid-Low", 100),
+                  rep("2: Middle", 100),
+                  rep("3: Mid-High", 100),
+                  rep("4: High", 100)),
+       vote = c(rep(1, 6), rep(0, 94),
+                rep(1, 20), rep(0, 80),
+                rep(1, 50), rep(0, 50),
+                rep(1, 80), rep(0, 20),
+                rep(1, 94), rep(0, 6))) -> Fake
+
+Fake %>%
+  group_by(educat, vote) %>%
+  summarize(n = n()) %>%
+  spread(educat, n) %>%
+  mutate(vote = c("No", "Yes")) %>%
+  bind_rows(., tibble(vote = "Total")) %>%
+  rename(Vote = vote) %>%
+  mutate_if(is.numeric, ~ifelse(is.na(.), 100, .)) %>%
+  kable(., caption = "Educación a nivel individual y Votación (Datos Hipotéticos)",
+        format="latex",
+        align = c("l","c","c","c","c","c"), booktabs=TRUE, longtable=TRUE) %>%
+  row_spec(0, bold=TRUE) %>%
+  row_spec(2, hline_after = TRUE) %>%
+  row_spec(3, italic = TRUE)
+```
+
+
+- El objetivo aquí es desmenuzar momios y logits en forma accesible.
+
+<!-- \small -->
+
+<!-- | Voto | 0. Bajo | 1. Medio-Bajo | 2. Medio | 3. Medio-Alto | 4. Alto | Total | -->
+<!-- |:----:|:-------:|:-----------:|:----------:|:------------:|:--------:|:-----:| -->
+<!-- | Sí  | 6  | 20 | 50 | 80 | 94 | 250 | -->
+<!-- | No   | 94 | 80 | 50 | 20 | 6 | 250 | -->
+<!-- | *N* | 100 | 100 | 100 | 100 | 100 | 500 | -->
+<!-- |     |     |     |     |     |     |     | -->
+<!-- | p(vote) | .06 | .20 | .50 | .80 | .94 | .50 | -->
+
+
+### Educación y Probabilidad de Votar
+
+Evidentemente hay una relación positiva.
+
+- i.e. gente más educada tiene una probabilidad más alta de votar.
+
+Pero también estamos viendo la probabilidad de no-linealidad en VDs discretas. 
+
+- El efecto de 0 a 1 en *x* es un cambio de .14 en la probabilidad de votar. 
+- De 1 a 2 en *x*: cambio de .30.
+- De 2 a 3 en *x*: cambio de .30 de nuevo. 
+- De 3 a 4 en *x*: cambio de .14. 
+
+Podemos pensar en algo análogo a un punto de inflexión. 
+
+### Visualizando los Momios
+
+| **Educación**  | **p(votar)** | **Momios de Votar**  |
+|:------------|:-------:|:--------------:|
+| 0: Bajo    | .06     | .06/.94 = .06  |
+| 1: Medio-Bajo  | .20     | .20/.80 = .25  |
+| 2: Medio  | .50     | .50/.50 = 1    |
+| 3: Medio-Alto | .80     | .80/.20 = 4    | 
+| 4: Alto     | .94     | .94/.06 = 16   | 
+
+Table: Probabilidad/Momios de Educación y Votar (Datos Hipotéticos)
+
+### Visualizando Momios
+
+La columna derecha, momios de votar, convierte probabilidades a momios.
+
+- e.g.  $\frac{p}{1-p}$ cuando *x* = 0 = $\frac{.06}{.94}$ = .06382979.
+- Una vez que llegamos a la categoria "Medio", los momios son enteros.
+	- Cuando los momios son igual a 1, esperamos un votante por cada no-votante.
+	
+## Relación de Momios (Odds Ratio)
+### Relación de Momios (Odds Ratio)
+
+Una forma en la que podemos ver como *x* afecta a *y* es utilizando la **relación de momios (odds ratio)**.
+
+
+### Momios y Relación de Momios
+
+Veamos a la tabla.
+
+- Momios de votar en la categoria de educación baja: .06.
+- Momios de votar en la categoria de educación media-baja: .25. 
+
+Los momios de votar para la categoria media-baja son más de cuatro veces los momios de votar en la categoría de educación baja. 
+
+
+- $\frac{.25}{.06}$ = 4.1$\overline{6}$
+- Hagan esto para todos los otros valores y la relación de momios va a ser 4 siempre. 
+
+$$
+\textrm{Odds ratio} = \frac{1}{.25} = \frac{4}{1} = \frac{16}{4} = 4
+$$
+
+### Cambio Porcentual en Momios
+
+También podemos calcular el **cambio porcentual en momios**.
+
+### Cambio Porcentual en Momios
+
+Vamos a considerar de nuevo los momios de votar en las dos categorias más bajas. 
+
+
+- Calcular el incremento de unidad (aquí: .25 - .06 = .19).
+- Dividimos eso entre los momios del valor más bajo (aquí: .06)
+- Esto nos da un valor de 3.1$\overline{6}$.
+- Multiplicamos eso por 100 para obtener el cambio porcentual
+
+Si hacemos esto para todos los otros valores, obtendremos valores de 3 (i.e. 300%).
+
+## Logits (Natural Logged Odds de y)
+### Logits (Natural Logged Odds de *y*)
+
+Hemos visto que cada unidad de cambio en *x* no produce un cambio consistente en *y*. 
+
+- Pero, el efecto del cambio en la relación de momios y cambio porcentual es consistente. 
+- El siguiente paso es hacer la transformación logarítmica natural de los momios, o **logit**. 
+
+
+### Transformación Logarítmica Natural
+
+El término clave aquí es transformación *natural* logarítmica. 
+
+En cálculo, el logaritmo natural con base *e* es común. 
+
+
+### Pregunta
+
+$$
+f(x) = (1 + \frac{1}{x})^{x}
+$$
+
+¿Qué pasa en esta fórmula cuando *x* se va hacia el infinito?
+
+
+
+### Transformación Logarítmica Natural
+
+Cuando *x* tiende al infinito, el exponente tiene también al infinito.
+
+- Sin embargo, el denominador también.
+
+Esto significa que estaremos tomando el exponencial de infinito para un valor cercano a 1, que resulta básicamente en 1.
+
+- Bernoulli descubrió que el límite está entre 2 y 3.
+
+Leonhard Euler propuso que la respuesta es *e* (un número irracional) y lo podemos denotar como *e* = 2.7182818284, aproximadamente.
+
+### Transformación Logarítmica Natural
+
+Tomamo el logaritmo natural de todos los momios de *y* y lo agregamos a nuestra table. 
+
+| **Educación**  | **p(votar)** | **Momios de Votar**  | **Momios Logged** |
+|:------------|:-------:|:--------------:|:-----------:|
+| 0: Low      | .06     | .06/.94 = .06  | -2.8      |
+| 1: Mid-low  | .20     | .20/.80 = .25  | -1.4      |
+| 2: Middle   | .50     | .50/.50 = 1    | 0           |
+| 3: Mid-high | .80     | .80/.20 = 4    | 1.4       |
+| 4: High     | .94     | .94/.06 = 16 | 2.8       |
+
+Table: Probabilidad, Momios, y Logits de Educación y Votar (Datos Hipotéticos)
