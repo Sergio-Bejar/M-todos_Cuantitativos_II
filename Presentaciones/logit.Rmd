@@ -440,3 +440,227 @@ Tomamo el logaritmo natural de todos los momios de *y* y lo agregamos a nuestra 
 | 4: High     | .94     | .94/.06 = 16 | 2.8       |
 
 Table: Probabilidad, Momios, y Logits de Educación y Votar (Datos Hipotéticos)
+
+## Regresión Logística
+### Regresión Logística
+
+Nuestra *y* no nada más es 0s y 1s, sino funciones logit aplicadas a los momios de 0s y 1s para todos los valores de *x*. Formalmente:
+
+
+$$
+\textrm{Momios logged de $y$} =  \hat{a} + \hat{b}(x)
+$$
+
+¿Cómo se vería esto en el ejemplo simple que estamos viendo? 
+
+
+### Regresión Logística
+
+$$
+\textrm{Momios logged de votar} = -2.8 + 1.4(x)
+$$
+
+Recordemos que:
+
+- $\hat{a}$ es el estimado de los momios logged de *y* cuando *x* = 0 (entonces: -2.8)
+- 1.4 es el $\hat{b}$ que observamos en la columna derecha de la tabla. 
+
+### Interpretación de Regresión Logística
+
+Una unidad de incremento en *x* resulta en un incremento de 1.4 en los momios logged de *y*. 
+
+- Aunque esto es una interpretación correcta, no es muy intuitiva. 
+
+¿Cómo obtenemos una interpretación más digestible/substantiva? 
+
+
+### Interpretación de Regresión Logística
+
+"Exponenciamos" el coeficiente de nuestra regresión.
+
+$$
+\textrm{Exp}(\hat{b}) = \textrm{Exp}(1.4) = e^{1.4} = 4
+$$
+¿Se ve familiar ese 4?
+
+
+### Interpretación de Regresión Logística
+
+*Es la relación de momios*.
+
+- Recuerda: tu coeficiente de regresión es el estimado del tamaño del efecto de una unidad a otra (más alta) en todo el rango de *x*. 
+
+### Interpretación de Regresión Logística 
+
+También podemos obtener el cambio porcentual en los momios. 
+
+
+$$
+\textrm{Cambio porcentual en los momios de $y$} = 100*(\textrm{Exp}(\hat{b}) - 1)
+$$
+
+
+Con estos datos, obtenemos un resultado de 300.  Cada incremento de unidad en $x$ (en este caso: educación) incrementa los momios de votar en un 300 por ciento. 
+
+### Interpretando Regresión Logística
+
+También podemos obtener probabilidades (por ejemplo: cuando *x* = 0)
+
+
+$$
+	\textrm{Probabilidad} = \frac{\textrm{Momios}}{1 + \textrm{Momios}} = \frac{e^{-2.8}}{1 + e^{-2.8}} = .06
+$$
+
+### ...o en R
+
+```{r}
+
+exp(-2.8)/(1 + exp(-2.8))
+plogis(-2.8)  # hagan esto mejor
+
+```
+
+### Ahora Con Datos Reales
+
+¿Cómo se vería esto con datos reales?  Vamos a hacer un ejemplo con datos del General Social Survey, olas 2016 y 2018. 
+
+
+- *y*: ¿Pueden las mujeres obtener un aborto legal por alguna razón?
+
+###
+
+```{r showabany, echo=F, eval=T, warning=F, results="asis"}
+
+gss_abortion %>%
+  filter(year >= 2016) %>%
+  group_by(abany) %>%
+  summarize(n = n()) %>% 
+  na.omit %>%
+  mutate(xcat = c("No", "Sí"),
+         porc = n/sum(n),
+         lab = paste0(mround(porc), "%")) %>%
+  select(xcat, n, lab) %>%
+  kable(., caption = "¿Pueden las mujeres obtener un aborto legal por alguna razón? (GSS, 2016-2018)",
+        col.names = c("Respuesta","No. de Observaciones","Porcentaje"),
+        format="latex",
+        align = c("l","c","c"), booktabs=TRUE, longtable=TRUE) %>%
+  row_spec(0, bold=TRUE)
+
+```
+
+### Variables Explicativas 
+
+- Mujer (1 = mujer)
+- Efectos Fijos para Raza (blancos [omitidos], afro-americanos, otros)
+- Hispano (1 = sí)
+- Nivel Educativo (años en escuela [0:20])
+- ID Partidario (muy D a muy R [0:6])
+- Actividad Religiosa (nunca a varias veces al día [0:10])
+
+###
+
+\scriptsize
+
+```{r, echo=T, eval= F}
+
+gss_abortion %>%
+  filter(year >= 2016) %>%
+  mutate(race = fct_relevel(race, "White"),
+         relactiv = relactiv - 1,
+         female = ifelse(sex == "Female", 1, 0)) -> Data
+
+M3 <- glm(abany ~ female + factor(race) + hispanic + educ + 
+            pid + relactiv, data=Data,
+          family=binomial(link="logit"))
+
+modelsummary(list("¿Se puede abortar por alguna razón?" = M3), output="latex",
+             title = "Actitudes sobre Aborto en GSS (2016-2018)",
+             stars = TRUE, gof_omit = "IC|F|Log.|R2$",
+             coef_map = c("female" = "Mujer",
+                          "factor(race)Black" = "Raza = Afro-Americano",
+                          "factor(race)Other" = "Raza = Otra",
+                          "hispanic" = "Hispano",
+                          "educ" = "Años de Educación",
+                          "pid7" = "ID Partidario (D to R)",
+                          "relactiv" = "Actividad Religiosa",
+                          "(Intercept)" = "Intercepto"),
+             align = "lc")
+
+```
+\normalsize
+
+###
+
+\scriptsize
+```{r model1, echo=F, eval=T, results="asis"}
+
+gss_abortion %>%
+  filter(year >= 2016) %>%
+  mutate(race = fct_relevel(race, "White"),
+         relactiv = relactiv - 1,
+         female = ifelse(sex == "Female", 1, 0)) -> Data
+
+M3 <- glm(abany ~ female + factor(race) + hispanic + educ + 
+            pid + relactiv, data=Data,
+          family=binomial(link="logit"))
+
+modelsummary(list("¿Se puede abortar por alguna razón?" = M3), output="latex",
+             title = "Actitudes sobre Aborto en GSS (2016-2018)",
+             stars = TRUE, gof_omit = "IC|F|Log.|R2$",
+             coef_map = c("female" = "Mujer",
+                          "factor(race)Black" = "Raza = Afro-Americano",
+                          "factor(race)Other" = "Raza = Otra",
+                          "hispanic" = "Hispano",
+                          "educ" = "Años de Educación",
+                          "pid7" = "ID Partidario (D to R)",
+                          "relactiv" = "Actividad Religiosa",
+                          "(Intercept)" = "Intercepto"),
+             align = "lc")
+
+```
+
+\normalsize
+
+### Interpretación de Tabla 5
+
+- No hay diferencia significativa entre mujeres y hombres. 
+- Los afro-americanos son menos propensos a pensar que las mujeres deberían poder abortar por alguna razón que los blancos.  
+- No hay diferencua entre otras razas (i.e. Asiáticos) y blancos. 
+- Los Hispanos son menos propensos a estar a favor del aborto por cualquier razón. 
+- La educación tiene un efecto positivo. 
+- Ser Republicano y religioso disminuye la propensidad a contestar "sí". 
+
+### Extrayendo Algunas Cantidades de Interés. 
+
+Digamos que nos interesa entender el efecto de ser Hispano. 
+
+
+- Exp(-0.354) = $e^{-0.354}$ = .701. Esto es la relación de momios (Odds Ratio). 
+- 100*($e^{-0.354}$ - 1) = -29.81%. El cambio porcentual en los momios de estar a favor del aborto por cualquier razón. 
+
+Ahora veamos el efecto de un incremento en educación.
+
+- Relación de momios (Odds ratio): $e^{.153}$ = 1.165.
+- Probabilidad de cambio en momios: 100*($e^{.153}$ - 1) = 16.53%
+
+El intercepto también da información útil ($\hat{a}$ = -.895).
+
+- Nos dice los momios logged de contestar "sí" para un individuo que es blanco, no-hispano, muy demócrata y que nunca va a servicios religiosos.
+
+- La probabilidad de que esa persona conteste "sí" es: .290
+
+# Conclusión
+### Conclusión
+
+Las variables dependientes binarias violan supuestos de OLS y producen estimados engañosos. 
+
+- Por eso utilizamos regresión logística.
+- El proceso de inferencia es el mismo, pero los coeficientes comunican cosas algo diferentes. 
+- Es la misma regresión, solo que sobre una VD transformada. 
+
+La compu hace el trabajo duro por nosotros, pero es importante saber que es lo que la compu está haciendo en este caso. 
+
+
+
+
+
