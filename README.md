@@ -27,3 +27,4 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Abril 29|  |  | [Laboratorio 4](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab4.pdf) |||
 |Mayo 6| [Examen 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen2.pdf) ||||| 
 |Mayo 8| Regresión Logística | [Presentación 9](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/logit.pdf)|||A (15.1-15.3)|
+|Mayo 13 | Regresión Logística Cont. | [Presentación 9, cont] ||||
