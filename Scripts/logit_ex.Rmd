@@ -1,0 +1,214 @@
+---
+title: "Tutorial Regresión Logística"
+output: html_document
+date: "2024-05-14"
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Ejemplo 
+
+En este ejercicio vamos a desarrollar un modelo que calcule la probabiidad de obtener mención honorífica al final de la licenciatura en CP/RI en función de la nota obtenida en métodos cuantitativos applicados. La variable `mencion` adquiere un valor de 1 si el alumno recibió la mención honorífica y 0 si no. La variable métodos es la calificación obtenida en la clase.
+
+Empezamos generando algunos datos hipotéticos. 
+
+```{r}
+mencion <- as.factor(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1,
+                         0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1,
+                         0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0,
+                         0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+                         1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,
+                         1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+                         1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1,
+                         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+                         0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0,
+                         0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0,
+                         0, 0, 0, 0, 1, 0, 0, 0, 1, 1))
+metodos <- c(41, 53, 54, 47, 57, 51, 42, 45, 54, 52, 51, 51, 71, 57, 50, 43,
+                 51, 60, 62, 57, 35, 75, 45, 57, 45, 46, 66, 57, 49, 49, 57, 64,
+                 63, 57, 50, 58, 75, 68, 44, 40, 41, 62, 57, 43, 48, 63, 39, 70,
+                 63, 59, 61, 38, 61, 49, 73, 44, 42, 39, 55, 52, 45, 61, 39, 41,
+                 50, 40, 60, 47, 59, 49, 46, 58, 71, 58, 46, 43, 54, 56, 46, 54,
+                 57, 54, 71, 48, 40, 64, 51, 39, 40, 61, 66, 49, 65, 52, 46, 61,
+                 72, 71, 40, 69, 64, 56, 49, 54, 53, 66, 67, 40, 46, 69, 40, 41,
+                 57, 58, 57, 37, 55, 62, 64, 40, 50, 46, 53, 52, 45, 56, 45, 54,
+                 56, 41, 54, 72, 56, 47, 49, 60, 54, 55, 33, 49, 43, 50, 52, 48,
+                 58, 43, 41, 43, 46, 44, 43, 61, 40, 49, 56, 61, 50, 51, 42, 67,
+                 53, 50, 51, 72, 48, 40, 53, 39, 63, 51, 45, 39, 42, 62, 44, 65,
+                 63, 54, 45, 60, 49, 48, 57, 55, 66, 64, 55, 42, 56, 53, 41, 42,
+                 53, 42, 60, 52, 38, 57, 58, 65)
+
+datos <- data.frame(mencion, metodos)
+head(datos, 4)
+```
+
+## Gráfico para ver relación entre variables
+
+Al igual que como lo hicimos para la regresión lineal, es bueno darnos una idea de si la variable independiente tiene alguna relación con la variable dependiente.  
+
+```{r}
+library(ggplot2)
+table(datos$mencion)
+```
+
+```{r}
+ggplot(data = datos, aes(x = mencion, y = metodos, color = mencion)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(width = 0.1) +
+  theme_minimal() +
+  theme(legend.position = "null")
+```
+
+Como lo podemos ver en el gráfico, parece que existe una diferencia estadística entre las calificaciones de les alumnes que obtuvieron mención honorífica y les que no. 
+
+## Modelo de regresión logística
+
+Con objeto de tener una inferencia más certera vamos a estimar un modelo logit en donde la variable dependiente sea `mencion` y la variable independiente sea `metodos`. 
+
+```{r}
+modelo <- glm(mencion ~ metodos, data = datos, family = "binomial")
+summary(modelo)
+```
+
+La interpretación de los coeficientes obtenidos al estimar el modelo es la siguiente: 
+
+El coeficiente estimado para el intercepto es el valor esperado del logaritmo de momios (odds) de que un estudiante obtenga mención honorífica cuando su calificación en métodos es 0.  No es ninguna sorpresa que los momios (odds) de que esto suceda sean muy bajos, *e*$^{-9.793942}$ = .00005579. 
+
+El modelo también nos indica que el logaritmo de los momios (odds) de que un estudiante obtenga mención honorífica esta relacionado positivamente con la calificación en métodos (el coeficiente es: 0.1563). Dicho coeficiente nos dice que por cada unidad que se incremente la calificación en métodos cuantitativos aplicados, el logaritmo de los momios (odds) de la variable `mencion` se incrementará 0.1563 unidades.  
+
+Para obtener una interpretación más substantiva aplicamos la inversa del logaritmo natural (*e*$^{0.1563404}$), que nos indica que por cada unidad de incremento en la calificación, se incrementan los momios (odds) de obtener mención en **1.169** unidades. 
+
+Además de los coeficientes estimados de nuestra regresión logística, la función `confint()` nos permite calcular con facilidad los intervalos de confianza de la siguiente forma: 
+
+```{r}
+confint(object = modelo, level = 0.95 )
+```
+
+## Gráfico del modelo
+
+Recordemos que una regresión logit modela el logaritmo de los momios (odds). Así que nosootros tenemos que estimar las probabilidades. La función `predict()` puede devolver directamente las probabilidades en lugar de logged odds. Para ello tenemos que indicar el argumento `type = "response`. 
+
+```{r}
+# BASE GRAPHICS SIN INTERVALOS DE CONFIANZA
+
+# Codificación 0,1 de la variable dependiente
+datos$mencion <- as.character(datos$mencion)
+datos$mencion <- as.numeric(datos$mencion)
+
+plot(mencion ~ metodos, datos, col = "darkblue",
+     main = "Modelo regresión logística",
+     ylab = "P(mencion=1|metodos)",
+     xlab = "metodos", pch = "I")
+
+# type = "response" devuelve las predicciones en forma de probabilidad en lugar de en loged odds
+curve(predict(modelo, data.frame(metodos = x), type = "response"),
+      col = "firebrick", lwd = 2.5, add = TRUE)
+```
+
+```{r}
+# MEDIANTE GGPLOT2 INCLUYENDO INTERVALOS DE CONFIANZA
+
+datos$mencion <- as.character(datos$mencion)
+datos$mencion <- as.numeric(datos$mencion)
+
+# Se crea un vector con nuevos valores interpolados en el rango de observaciones.
+nuevos_puntos <- seq(from = min(datos$metodos), to = max(datos$metodos),
+                     by = 0.5)
+
+
+# Predicciones de los nuevos puntos según el modelo. 
+# Si se indica se.fit = TRUE se devuelve el error estándar de cada predicción
+# junto con el valor de la predicción (fit).
+predicciones <- predict(modelo, data.frame(metodos = nuevos_puntos),
+                        se.fit = TRUE)
+
+# Mediante la función logit se transforman los logged odds a probabilidades.
+predicciones_logit <- exp(predicciones$fit) / (1 + exp(predicciones$fit))
+
+# Se calcula el límite inferior y superior del IC del 95% sustrayendo e
+# incrementando el logged odds de cada predicción 1.95*SE. Una vez calculados los
+# logged odds del intervalo se transforman en probabilidades con la función logit.
+limite_inferior       <- predicciones$fit - 1.96 * predicciones$se.fit
+limite_inferior_logit <- exp(limite_inferior) / (1 + exp(limite_inferior))
+limite_superior       <- predicciones$fit + 1.96 * predicciones$se.fit
+limite_superior_logit <- exp(limite_superior) / (1 + exp(limite_superior))
+
+# Se crea un dataframe con los nuevos puntos y sus predicciones
+datos_curva <- data.frame(metodos = nuevos_puntos,
+                          probabilidad_mencion = predicciones_logit,
+                          limite_inferior_logit = limite_inferior_logit, 
+                          limite_superior_logit = limite_superior_logit)
+
+ggplot(datos, aes(x = metodos, y = mencion)) +
+      geom_point(aes(color = as.factor(mencion)), shape = "I", size = 3) + 
+      geom_line(data = datos_curva, aes(y = probabilidad_mencion),
+                color = "firebrick") + 
+      geom_line(data = datos_curva, aes(y = limite_inferior_logit),
+                linetype = "dashed") + 
+      geom_line(data = datos_curva, aes(y = limite_superior_logit),
+                linetype = "dashed") + 
+      theme_bw() +
+      labs(title = "Modelo regresión logística mencion ~ nota metodos",
+           y = "P(mencion = 1 | metodos)", y = "metodos") + 
+      theme(legend.position = "null") +
+      theme(plot.title = element_text(size = 10))
+```
+
+## Evaluación del modelo
+
+Para evaluar la validez y calidad de un modelo logit tenemos que analizar tanto el modelo como sus variables predictivas. 
+
+El modelo es útil cuando dicho modelo hace ubn mejor trabajo explicando las observaciones que un modelo nulo (i.e. sin predictores).  El test *Likelihood Ratio* nos permite calcular si hay diferencia significativa entre los residuos del modelo de interés y el modelo nulo. El estadístico sigue una distribución chi-cuadrado con grados de libertad equivalentes a la diferencia de grados de libertad de los dos modelos.
+
+```{r}
+# Diferencia de residuos
+# En R, un objeto glm almacena la "deviance" del modelo, así como la "deviance"
+# del modelo nulo. 
+dif_residuos <- modelo$null.deviance - modelo$deviance
+
+# Grados libertad
+df <- modelo$df.null - modelo$df.residual
+
+# p-value
+p_value <- pchisq(q = dif_residuos,df = df, lower.tail = FALSE)
+
+paste("Diferencia de residuos:", round(dif_residuos, 4))
+```
+
+```{r}
+paste("Grados de libertad:", df)
+```
+
+```{r}
+paste("p-value:", p_value)
+```
+
+```{r}
+# El mismo cálculo se puede obtener directamente con:
+anova(modelo, test = "Chisq")
+```
+
+El modelo es significativo (p-vaue < .05). 
+
+Para determinar si los predictores introducidos en un modelo de regresión logística contribuyen de forma significativa se emplea el estadístico *Z* y el test *Wald chi-test*. Este es el método utilizado para calcular los p-values que se muestran al hacer `summary()` del modelo. El predictor matemáticas sí contribuye de forma significativa (p-value = 1.03e-09).
+
+## Comparación de clasificación predicha y observaciones
+
+En este ejercicio vamos a asumir que hay un *treshold* de 0.5. Si la probabilidad de que la variable mencion adquiera el valor de 1 es superior a 0.5, se asigna a este nivel, si es menor se asigna al 0 (no mención). 
+
+```{r}
+library(vcd)
+predicciones <- ifelse(test = modelo$fitted.values > 0.5, yes = 1, no = 0)
+matriz_confusion <- table(modelo$model$mencion, predicciones,
+                          dnn = c("observaciones", "predicciones"))
+matriz_confusion
+```
+
+```{r}
+mosaic(matriz_confusion, shade = T, colorize = T,
+       gp = gpar(fill = matrix(c("green3", "red2", "red2", "green3"), 2, 2)))
+```
+
+El modelo es capaz de clasificar correctamente (140+22)/(140+22+27+11) = 0.81(81%) de las observaciones cuando se emplean los datos de entrenamiento.
