@@ -25,7 +25,7 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Abril 22 | Regresión Múltiple e Interacciones | [Presentación 8](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/extension_regbiv_completa.pdf) ||||
 |Abril 24 | Ejemplos e Interpretación de Interacciones | [RPubs](https://rpubs.com/bebejar/1177751) ||||
 |Abril 29|  |  | [Laboratorio 4](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab4.pdf) |||
-|Mayo 6| [Examen 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen2.pdf) ||||| 
+|Mayo 6| [Examen 2](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen2.pdf) |[Respuestas](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Examen/examen2%20(1).pdf)|||| 
 |Mayo 8| Modelos de Máxima Verosimilitud: Logit | [Presentación 9](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/logit.pdf)|||A 15.1-15.3|
 |Mayo 13 | Modelos de Máxima Verosimilitud: Logit, cont. | [Presentación 9, cont](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/logit1.pdf) ||||
 |Mayo 15 | Ejemplos Logit | [RPubs](https://rpubs.com/bebejar/1185212) |[Laboratorio 5](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab5.pdf)|||
