@@ -29,4 +29,4 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Mayo 8| Modelos de Máxima Verosimilitud: Logit | [Presentación 9](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/logit.pdf)|||A 15.1-15.3|
 |Mayo 13 | Modelos de Máxima Verosimilitud: Logit, cont. | [Presentación 9, cont](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Presentaciones/logit1.pdf) ||||
 |Mayo 15 | Ejemplos Logit | [RPubs](https://rpubs.com/bebejar/1185212) |[Laboratorio 5](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab5.pdf)|||
-|Mayo 22 | Probit / Ordered MLE | 
+|Mayo 22 | Probit / Ordered MLE | [RPubs](https://rpubs.com/bebejar/1187461) [RPubs](https://rpubs.com/bebejar/1187520) ||||
