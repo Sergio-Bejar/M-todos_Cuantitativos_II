@@ -1,0 +1,131 @@
+---
+title: "Modelos para Variables Dependientes de Conteo"
+output: html_document
+date: "2024-05-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Variables de Conteo
+
+Una variable de conteo nos da información sobre el número de eventos que ocurren en un periodo determinado de tiempo. Una característica importante de estas variables es que *nunca pueden ser negativas* y deben tomar un *valor discreto* (e.g., 0, 1, 2, 3, 4, ...). Las variables dependientes de conteo por lo tanto tienden a tener un sesgo (hacia la izquierda o derecha) y una distribución de probabilidad discreta del tipo Poisson o Binomial Negativa. 
+
+Como un ejemplo de una variable de conteo vamos a usar el número de historias de televisión sobre política energética en un determinado mes. Esta variable proviene de la base de datos de Peake y Eshbaugh-Soha (2008) denotada como `PESenergy.csv` en la sección Files del Repositorio en Github de nuestra clase. 
+
+Vamos primero a darnos una idea de la distribución de la variable descrita anteriormente. 
+
+```{r}
+library(foreign)
+energy_data <- read.csv("/Users/sergiobejar/Downloads/PESenergy.csv") ##carga base de datos 
+```
+
+Con un histograma podemos ver la distribución de la variable dependiente. 
+
+```{r}
+library(ggplot2)
+ggplot(energy_data, aes(x = Energy)) + 
+        geom_histogram(binwidth = 10, col='black', fill='green', alpha=0.5) + 
+        theme_bw() ## estoy agrupando en bins de tamaño 10 para propósitos ilustrativos
+```
+
+El número de noticias en un mes es un evento de conteo.  Aquí hay que notar, sin embargo, que los datos mensuales son dependientes en el tiempo. Esta característica de nuestros datos la ignoraremos por el momento. 
+
+## Regresión Poisson
+
+El modelo más simple que podemos estimar cuando tenemos una variable dependiente de este tipo (conteo) es un modelo Poisson. Para ello tenemos que escribir lo siguiente:
+
+```{r}
+m_poisson <- glm(Energy ~ rmn1173 + grf0175 + grf575 + jec477 + jec1177 + jec479 + embargo + hostages + oilc +
+                  Approval + Unemploy, family = poisson(link = log),
+                  data = energy_data) ## estima modelo Poisson
+```
+
+En este modelo la cobertura televisiva de política energética es una función de seis términos de discursos presidenciales (dummy que toma valor de 1 en el mes del discurso y 0 para otros meses), un indicador de embargo de petróleo Árabe (dummy), un indicador para la crisis de rehenes en Irán, el precio del petróleo, la aprobación presidencial y la tasa de desempleo. 
+
+Ahora vemos los resultados de la regresión. 
+
+```{r}
+summary(m_poisson) ## objeto con resultados de regresión
+``` 
+
+Nótese que la función en este caso es lograrítmica (link = log) y aunque los coeficientes no son muy informativos, la interpretación es relativamente sencilla. 
+
+Iniciamos por estimar la **razón de conteo**:
+
+```{r}
+exp(m_poisson$coefficients[-1]) ## estima razón de conteo para todos coefs. excepto intercepto
+```
+
+Digamos que queremos interpretar el efecto de aprobación presidencial con estos resultados.  La razón de conteo de la cobertura televisiva de política energética es 0.9664. Y esto lo podemos interpretar de la siguiente forma: un incremento porcentual de un punto en aprobación presidencial resulta en una disminución de 3.4% en promedio en cobertura televisiva de política energética manteniendo todos las otras variables constantes. 
+
+Una forma fácil de estimar el cambio porcentual para cada coeficiente es la siguiente:
+
+```{r}
+100*(exp(m_poisson$coefficients[-1]) - 1) ## estima cambio porcentual para todos coefs. excepto intercepto
+```
+
+
+## Regresión Binomial Negativa
+
+Una característica interesante de la distribución Poisson es que la varianza es igual a la media.  Por lo que cuendo modelamos la media, nuestro modelo esta simultaneamente modelando la varianza. 
+
+Muchas veces nos podemos encontrar con variables de conteo en donde la varianza es más amplia de lo que esperamos -un fenómeno llamado *sobredispersión*. La regresión binomial negativa nos ofrece una solución a este fenómeno estimando un parámetro de dispersión extra que permite que la varianza condicional sea diferente a la mdia condicional. 
+
+Estimamos un modelo de regresión binomial negativa:
+
+```{r}
+library(MASS) ## llamamos paquete MASS
+m_bn <- glm.nb(Energy ~ rmn1173 + grf0175 + grf575 + jec477 + jec1177 + jec479 + embargo + hostages + oilc +
+                  Approval + Unemploy,
+                  data = energy_data) ## estima modelo Binomal Negativo
+```
+
+Imprimimos los resultados:
+
+```{r}
+summary(m_bn)
+```
+
+Los resultados de un modelo binomial negativo pueden ser interpretados de la misma manera que los resultados de una regresión Poisson. 
+
+```{r}
+100*(exp(m_bn$coefficients[-1]) - 1) ## estima cambio porcentual para todos coefs. excepto intercepto
+```
+
+Una diferencia importante, reportada en nuestro `summary`, es el parámetro de dispersión estimado ($\theta$). En este caso $\theta$ = 2.15 con un error estándar de 0.242. Esto indica que sobredispersión está presente en nuestra variable dependiente. En efecto, hay diferencias importantes entre los resultados del modelo Poisson y el Binomial Negativo: varias variables que son significantes en el modelo Poisson no lo son el el Binomial Negativo. Además el AIC es substancialmente más bajo en el modelo negativo binomial, lo que indica un mejor fit aún penalizando con el paramétro de sobredispersión. 
+
+
+## Gráfica Predicción de Eventos
+
+Aunque la razón de conteo es una forma fácil de interpretar los coeficientes de los modelos, también podemos graficar los resultados. Hay que recordar que en este caso estamos modelando el logaritmo de la media parametral, así que tenemos que exponenciar nuestra predicción lineal para predecir la cuenta de eventos esperados dadas nuestras variables explicativas. Como en los modelos logit y probit, usamos la función `predict`. 
+
+Vamos a suponer que queremos graficar el efecto de aprobación presidencial en el número de historias de televisión sobre energía. 
+
+La variable `approve` tiene un rango de 24% de aprobación a 72.3%. Por lo tanto, primero construimos un vector que incluya el rango completo de aprobación, así como valores plausibles para todas las otras variables.  
+
+```{r}
+approval <- seq(24, 72.3, by = .1)
+inputs.4 <- cbind(1, 0, 0, 0, 0, 0, 0, 0, 0, mean(energy_data$oilc), approval, mean(energy_data$Unemploy))
+colnames(inputs.4) <- c("constant", "rmn1173", "grf0175", "grf575", "jec477", "jec1177", "jec479", "embargo", 
+                        "hostages", "oilc", "Approval", "Unemploy")
+inputs.4 <- as.data.frame(inputs.4)
+```
+
+Una vez que tenemos el data frame de las variables predictivas, podemos usar `predict` para predecir el número de historias televisivas sobre energía para los modelos Poisson y Binomial Negativo. 
+
+```{r}
+pred.poisson <- predict(m_poisson, newdata = inputs.4, type = "response")
+pred.bn <- predict(m_bn, newdata = inputs.4, type = "response")
+```
+
+Y para graficar la predicciones para cada modelo:
+
+```{r}
+plot(y = pred.poisson, x = approval, type = "l", lwd = 2, ylim = c(0, 60), 
+       xlab = "Aprobación Presidencial", ylab = "Predicción de # Historias Sobre Energía")
+lines(y = pred.bn, x = approval, lty = 2, col = "blue", lwd = 2)
+legend(x = 50, y = 50, legend = c("Poisson", "Binomial Negativa"), lty = c(1, 2), col = c("black", "blue"), lwd = 2)
+```
+
