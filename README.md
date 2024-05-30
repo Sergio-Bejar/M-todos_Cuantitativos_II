@@ -31,4 +31,4 @@ Febrero 28 | Inferencia Estadística: Muestreo Aleatorio | [Presentación 3](htt
 |Mayo 15 | Ejemplos Logit | [RPubs](https://rpubs.com/bebejar/1185212) |[Laboratorio 5](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab5.pdf)|||
 |        |                |                                            |[Respuestas](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab5%20(1).pdf) |||
 |Mayo 22 | Probit / Ordered MLE | [RPubs](https://rpubs.com/bebejar/1187461) [RPubs](https://rpubs.com/bebejar/1187520) ||||
-|Mayo 27 | Modelos Variables de Conteo | [RPubs](https://rpubs.com/bebejar/1189387) ||||
+|Mayo 27 | Modelos Variables de Conteo | [RPubs](https://rpubs.com/bebejar/1189387) |[Laboratorio 6](https://github.com/Sergio-Bejar/MCA_CIDE/blob/main/Laboratorios/lab6.pdf)|||
