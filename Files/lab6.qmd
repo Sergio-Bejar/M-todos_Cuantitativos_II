@@ -1,0 +1,23 @@
+---
+title: "Laboratorio 6"
+format: pdf
+editor: visual
+---
+
+## Instrucciones
+
+Este laboratorio hace referencia a temas abordados en clase sobre regresión Poisson y Binomial Negativa. Tienes la opción de contestarlo en equipos de hasta 3 personas (máx.) o de manera individual. El archivo con las respuestas lo debes enviar por email a mi correo electrónico (sergio.bejar@cide.edu) a más tardar el miércoles 5 de junio, 2023 a las 12:00pm.
+
+La base de datos que vamos a utilizar se encuentra en el folder "Files" del repositorio Github de la clase y se llama ("drugCoverage.csv").
+
+## Ejercicio: Noticias Sobre Drogas
+
+En este ejercicio vamos a estimar el efecto de diferentes variables en la cobertura televisiva sobre drogas. La variable dependiente es cobertura noticiosa sobre drogas (drugsmedia), que es una variable de conteo.  Las variables explicativas son: un indicador de discursos que dio Ronald Reagan sobre drogas en septiembre de 1986 (rwr86), un indicador para un discurso de George W. Bush en septiembre de 1989 (ghwb89), el porcentaje de aprobación presidencial (approval), y la tasa de desempleo (unemploy). 
+
+1. Estima un modelo Poisson en donde la variable dependiente sea función de las cuatro variables explicativas. 
+
+2. Estima una regresión Binomial Negativa para la misma especificación y determina qué modelo (i.e. Poisson o Binomial Negativo) es el más adecuado explicando el por qué. 
+
+3. Calcula el Count Ratio (Razón de Conteo) para la variable de aprobación presidencial en cada uno de los modelos estimados anteriormente. 
+
+4. Grafica el número de eventos predichos para cada uno de los modelos para todo el rango de la variable desempleo (unemploy) manteniendo las variables de discursos presidenciales iguales a cero y la aprobación en su media.  Explica el (los) resultado del gráfico. 
